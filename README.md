@@ -13,25 +13,25 @@ Our data comes from the UC Merced Land Use Dataset (http://weegee.vision.ucmerce
 Citation: Yi Yang and Shawn Newsam, "Bag-Of-Visual-Words and Spatial Extensions for Land-Use Classification," ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (ACM GIS), 2010.
 
 The dataset contains 21 different classes of land use, with 100 images under each class for a total of 2,100 images. The different classes are as follows:
-*agricultural
-*airplane
-*baseballdiamond
-*beach
-*buildings
-*chaparral
-*denseresidential
-*forest
-*freeway
-*golfcourse
-*harbor
-*intersection
-*mediumresidential
-*mobilehomepark
-*overpass
-*parkinglot
-*river
-*runway
-*sparseresidential
-*storagetanks
-*tenniscourt
+* agricultural
+* airplane
+* baseballdiamond
+* beach
+* buildings
+* chaparral
+* denseresidential
+* forest
+* freeway
+* golfcourse
+* harbor
+* intersection
+* mediumresidential
+* mobilehomepark
+* overpass
+* parkinglot
+* river
+* runway
+* sparseresidential
+* storagetanks
+* tenniscourt
 
