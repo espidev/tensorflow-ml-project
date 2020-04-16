@@ -42,8 +42,8 @@ The dataset contains 21 different classes of land use, with 100 images under eac
 An important choice is whether or not colour should be factored into calculations. Since some land formations look very similar under greyscale, we will be including it. This will requiring normalization of all pixels into RGB, which means each pixel with have 3 values between 0 and 255.
 
 ### Training Method
-We will be using multiple 2D convolutional layers in the model. We will start with larger kernel sizes in order to learn about larger features first, and then have later layers having smaller kernel sizes. All of these layres will have the relu activation function.
+We will be using multiple 2D convolutional layers in the model. We will start with larger kernel sizes in order to learn about larger features first, and then have later layers having smaller kernel sizes. All of these layers will have the relu activation function.
 
 We can also add drop out layers between layers to reduce the effects of overtraining.
 
-For the optimizer, we will just use adam, because it works fairly well for other image classification problems.
+For the optimizer, we will likely use adam, because it works fairly well for other image classification problems.
