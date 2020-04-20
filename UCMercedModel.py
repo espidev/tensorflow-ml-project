@@ -50,9 +50,8 @@ print(test_label.shape)
 
 baseline_model = keras.Sequential([
     keras.layers.Flatten(input_shape=(256, 256)),
-    keras.layers.Dense(16, activation=tf.nn.relu),
-    keras.layers.Dropout(0.1),
-    keras.layers.Dense(16, activation=tf.nn.relu),
+    keras.layers.Dense(64, activation=tf.nn.relu),
+    keras.layers.Dense(64, activation=tf.nn.relu),
     keras.layers.Dense(21, activation=tf.nn.softmax)
 ])
 
@@ -69,7 +68,9 @@ history = baseline_model.fit(train_data,
                              verbose=2)
 
 predictions = baseline_model.predict(test_data)
+
 print(predictions[0])
+print(test_label[0])
 # plt.figure(figsize=(10, 10))
 # for i in range(25):
 #     plt.subplot(5, 5, i+1)
