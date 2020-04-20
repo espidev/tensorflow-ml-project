@@ -16,6 +16,7 @@ def upload_images():  # read from rawdata directory
         for name in os.listdir(f"rawdata\\{landuses[i]}"):
             img = cv2.imread(
                 f"rawdata\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
+            img = cv2.resize(img, (256, 256))
             yield img, landuses[i]
 
 
@@ -73,7 +74,7 @@ def grayscale(images):
     grays = []
     for image in images:
         grays.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
-    return grays
+    return np.array(grays)
 
 
 # save_input()
