@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 .idea
-
+.sh
 .vscode/
 rawdata/
 UCMercedImages

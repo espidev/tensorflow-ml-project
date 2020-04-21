@@ -50,26 +50,26 @@ print(test_label.shape)
 # plt.show()
 
 baseline_model = keras.Sequential([
-    keras.layers.Conv2D(32, (5, 5), activation=tf.nn.relu,
+    keras.layers.Conv2D(64, (6, 6), activation=tf.nn.relu,
                         input_shape=(256, 256, 1)),  # 256 by 256, 1 for grayscale
     keras.layers.MaxPooling2D(pool_size=(2, 2)),
-    keras.layers.Conv2D(32, (5, 5), activation=tf.nn.relu),
+    keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
     keras.layers.MaxPooling2D(pool_size=(2, 2)),
     keras.layers.Flatten(),
-    keras.layers.Dense(64, activation=tf.nn.relu),
+    keras.layers.Dense(128, activation=tf.nn.relu),
     keras.layers.Dropout(0.3),
     keras.layers.Dense(21, activation=tf.nn.softmax)
 ])
 
 
-baseline_model.compile(optimizer='Adamax',
+baseline_model.compile(optimizer='RMSprop',
                        loss='sparse_categorical_crossentropy',
-                       metrics=['accuracy'])
+                       metrics=['accuracy', "sparse_categorical_crossentropy"])
 baseline_model.summary()
 
 history = baseline_model.fit(train_data,
                              train_label,
-                             epochs=100,
+                             epochs=10,
                              batch_size=10,
                              validation_split=0.1,
                              verbose=2)
