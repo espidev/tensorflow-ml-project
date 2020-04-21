@@ -1,3 +1,8 @@
 pickle-mixin
 opencv-python
 tqdm
+numpy
+tensorflow
+keras
+matplotlib
+os
