@@ -78,14 +78,18 @@ predictions = baseline_model.predict(test_data)
 
 print(predictions[0:10])
 print(test_label[0:10])
-plt.figure(figsize=(10, 10))
-for i in range(25):
-    plt.subplot(5, 5, i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    plt.imshow(test_data[i], cmap='gray')
-    plt.xlabel(f"{index[test_label[i]]}, {predictions[i]}")
-plt.show()
+# plt.figure(figsize=(10, 10))
+# for i in range(25):
+#     plt.subplot(5, 5, i+1)
+#     plt.xticks([])
+#     plt.yticks([])
+#     plt.grid(False)
+#     plt.imshow(test_data[i], cmap='gray')
+#     plt.xlabel(f"{index[test_label[i]]}, {predictions[i]}")
+# plt.show()
 
 print(history)
+
+# save model
+baseline_model.save('baseline_model.h5')
+print('Saved model.')

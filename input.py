@@ -76,5 +76,4 @@ def grayscale(images):
         grays.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
     return np.array(grays)
 
-
 # save_input()
