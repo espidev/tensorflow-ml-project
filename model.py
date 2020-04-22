@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy
 import pandas as pd
+import cv2
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
@@ -10,28 +11,24 @@ import input
 
 mpl.use('tkagg')
 
+IMG_SIZE = 150
+
 def get_classes():
     for landuse in open("landuses.txt", "r").readLines():
         yield landuse
 
 
 def get_model():
-    # model = keras.Sequential([
-    #     layers.Flatten(input_shape=(256, 256)),
-    #     layers.Dense(64, activation=tf.nn.relu),
-    #     layers.Dropout(0.5),
-    #     layers.Dense(21, activation=tf.nn.softmax)
-    # ])
-
     model = keras.Sequential([
-        layers.Conv2D(32, (3, 3), input_shape=(256, 256, 3), activation=tf.nn.relu),
+        layers.Conv2D(32, (3, 3), input_shape=(IMG_SIZE, IMG_SIZE, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
-        layers.MaxPool2D(pool_size=(2, 2)),
+        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dense(64, activation=tf.nn.relu),
+        layers.Dense(128, activation=tf.nn.relu),
+        # keras.layers.Dropout(0.5),
         layers.Dense(21, activation=tf.nn.softmax)
     ])
 
@@ -47,14 +44,14 @@ def train_model(train_data, train_labels, test_data, test_labels):
 
     return model, model.fit(train_data,
                         train_labels,
-                        epochs=5,
-                        batch_size=512,
+                        epochs=10,
+                        # batch_size=512,
                         validation_split=0.2,
                         verbose=2)
 
 
 def test_model(model, test_data, test_labels):
-    test_loss, test_acc = model.evaluate(test_data, test_labels)
+    test_loss, test_acc, a = model.evaluate(test_data, test_labels)
 
     print('Test accuracy:', test_acc)
     # predictions = model.predict(test_data)
@@ -89,13 +86,15 @@ def process_data():
     # grays = input.grayscale(images)
     colours = []
     for image in images:
-        colours.append(img_to_array(image))
+        colours.append(img_to_array(cv2.resize(image, (IMG_SIZE, IMG_SIZE))))
 
     combined = list(zip(colours, labels))
     numpy.random.shuffle(combined)
 
     train_data, train_labels = zip(*combined)
     train_data = numpy.array(train_data)
+    train_data = train_data / 255
+    train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
     train_labels = numpy.array(train_labels)
 
     test_data = train_data[2000:]
@@ -112,9 +111,13 @@ def process_data():
     model, history = train_model(train_data, train_labels, test_data, test_labels)
     test_model(model, test_data, test_labels)
 
+    print("Saving model...")
+    model.save('colour_model.h5')
+    print("Saved.")
+
     plot_history(history)
 
 
-# process_data()
+process_data()
 
 
