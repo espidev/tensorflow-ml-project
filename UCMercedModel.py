@@ -50,10 +50,10 @@ print(test_label.shape)
 # plt.show()
 
 baseline_model = keras.Sequential([
-    keras.layers.Conv2D(64, (6, 6), activation=tf.nn.relu,
+    keras.layers.Conv2D(32, (3, 3), activation=tf.nn.relu,
                         input_shape=(256, 256, 1)),  # 256 by 256, 1 for grayscale
     keras.layers.MaxPooling2D(pool_size=(2, 2)),
-    keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
+    keras.layers.Conv2D(32, (3, 3), activation=tf.nn.relu),
     keras.layers.MaxPooling2D(pool_size=(2, 2)),
     keras.layers.Flatten(),
     keras.layers.Dense(128, activation=tf.nn.relu),

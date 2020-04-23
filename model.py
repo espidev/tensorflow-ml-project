@@ -3,8 +3,8 @@ import numpy
 import pandas as pd
 import cv2
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+from tensorflow.keras import layers  # noqa
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import input
@@ -13,6 +13,7 @@ mpl.use('tkagg')
 
 IMG_SIZE = 150
 
+
 def get_classes():
     for landuse in open("landuses.txt", "r").readLines():
         yield landuse
@@ -20,7 +21,8 @@ def get_classes():
 
 def get_model():
     model = keras.Sequential([
-        layers.Conv2D(32, (3, 3), input_shape=(IMG_SIZE, IMG_SIZE, 3), activation=tf.nn.relu),
+        layers.Conv2D(32, (3, 3), input_shape=(
+            IMG_SIZE, IMG_SIZE, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
@@ -43,11 +45,11 @@ def train_model(train_data, train_labels, test_data, test_labels):
     model = get_model()
 
     return model, model.fit(train_data,
-                        train_labels,
-                        epochs=10,
-                        # batch_size=512,
-                        validation_split=0.2,
-                        verbose=2)
+                            train_labels,
+                            epochs=10,
+                            # batch_size=512,
+                            validation_split=0.2,
+                            verbose=2)
 
 
 def test_model(model, test_data, test_labels):
@@ -108,7 +110,8 @@ def process_data():
     print(test_data.shape)
     print(test_labels.shape)
 
-    model, history = train_model(train_data, train_labels, test_data, test_labels)
+    model, history = train_model(
+        train_data, train_labels, test_data, test_labels)
     test_model(model, test_data, test_labels)
 
     print("Saving model...")
@@ -119,5 +122,4 @@ def process_data():
 
 
 process_data()
-
 
