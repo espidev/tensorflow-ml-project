@@ -33,7 +33,7 @@ def get_model():
         layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dense(128, activation=tf.nn.relu),
+        layers.Dense(128, activation=tf.nn.relu), # consider changing
         # keras.layers.Dropout(0.5),
         layers.Dense(21, activation=tf.nn.softmax)
     ])
