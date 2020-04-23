@@ -128,5 +128,5 @@ def process_data():
 # process_data()
 # with CustomObjectScope({'GlorotUniform': glorot_uniform()}):
 #     new_model = load_model('files\\colour_model.h5')
-new_model = keras.models.load_model('files\\colour_model.h5')
+new_model = tf.keras.models.load_model('files\\colour_model.h5')
 new_model.summary()
