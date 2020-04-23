@@ -8,19 +8,19 @@ from tqdm import tqdm  # noqa
 
 def upload_images():  # read from rawdata directory
     print("Loading Images...")
-    file = open("landuses.txt", "r")
+    file = open("files\\landuses.txt", "r")
     landuses = file.readlines()
     for i in tqdm(range(len(landuses))):
         landuses[i] = landuses[i][:-1]  # landuses.txt must end with blank line
         # print(landuses[i])
-        for name in os.listdir(f"rawdata\\{landuses[i]}"):
+        for name in os.listdir(f"files\\rawdata\\{landuses[i]}"):
             img = cv2.imread(
-                f"rawdata\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
+                f"files\\rawdata\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
             img = cv2.resize(img, (256, 256))
             yield img, landuses[i]
 
 
-def save_input():  # pickling images and labels to prevent reloading from disk every time
+def save_input():  # pickling images and labels to prevent reloading from rawdata every time
     images, labels = zip(*upload_images())
     images = list(images)
     labels = list(labels)
@@ -34,8 +34,8 @@ def save_input():  # pickling images and labels to prevent reloading from disk e
             current = label
         num_labels.append(index)
 
-    image_pickle_file = open("UCMercedImages", "wb")
-    label_pickle_file = open("UCMercedLabels", "wb")
+    image_pickle_file = open("files\\UCMercedImages", "wb")
+    label_pickle_file = open("files\\UCMercedLabels", "wb")
 
     pickle.dump(images, image_pickle_file)
     pickle.dump(num_labels, label_pickle_file)
@@ -55,7 +55,7 @@ def show_images(str="", images=[]):  # full image name OR list of images
     if (len(str) > 0):
         name = str[:-6]
         img = cv2.imread(
-            f"rawdata\\{name}\\{str}", cv2.IMREAD_UNCHANGED)
+            f"files\\rawdata\\{name}\\{str}", cv2.IMREAD_UNCHANGED)
         cv2.imshow(str, img)
         cv2.waitKey(0)
     else:

@@ -1,13 +1,17 @@
+import input
 import tensorflow as tf
 import numpy
 import pandas as pd
-import cv2
-from tensorflow import keras
-from tensorflow.keras import layers  # noqa
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import input
+import cv2
+import os  # delete
+import keras
+from keras import layers  # noqa
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
+from keras.models import load_model
+from keras.initializers import glorot_uniform
+from keras.utils import CustomObjectScope
 
 mpl.use('tkagg')
 
@@ -15,7 +19,7 @@ IMG_SIZE = 150
 
 
 def get_classes():
-    for landuse in open("landuses.txt", "r").readLines():
+    for landuse in open("files\\landuses.txt", "r").readLines():
         yield landuse
 
 
@@ -83,8 +87,8 @@ def plot_history(history):
 
 
 def process_data():
-    images = input.load("UCMercedImages")
-    labels = input.load("UCMercedLabels")
+    images = input.load("files\\UCMercedImages")
+    labels = input.load("files\\UCMercedLabels")
     # grays = input.grayscale(images)
     colours = []
     for image in images:
@@ -115,11 +119,14 @@ def process_data():
     test_model(model, test_data, test_labels)
 
     print("Saving model...")
-    model.save('colour_model.h5')
+    model.save('files\\colour_model.h5')
     print("Saved.")
 
     plot_history(history)
 
 
-process_data()
-
+# process_data()
+# with CustomObjectScope({'GlorotUniform': glorot_uniform()}):
+#     new_model = load_model('files\\colour_model.h5')
+new_model = keras.models.load_model('files\\colour_model.h5')
+new_model.summary()
