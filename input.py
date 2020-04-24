@@ -4,6 +4,7 @@ import os
 import os.path  # noqa
 import pickle
 from tqdm import tqdm  # noqa
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 
 
 def upload_images():  # read from rawdata directory
@@ -18,6 +19,43 @@ def upload_images():  # read from rawdata directory
                 f"files\\rawdata\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
             img = cv2.resize(img, (256, 256))
             yield img, landuses[i]
+
+
+def augment_images():
+    if not os.path.exists('files\\augmented'):
+        os.makedirs('files\\augmented')
+    for landuse in open("files\\landuses.txt", "r").readlines():
+        path = f'files\\augmented\\{landuse[:-1]}'
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    images, labels = zip(*upload_images())
+    images = np.array(list(images))
+    labels = np.array(list(labels))
+
+    print(images.shape)
+    print(images[0].shape)
+    t = img_to_array(images[0])
+    print(t.shape)
+    t = t.reshape((1,) + t.shape)
+    print(t.shape)
+    data_aug = ImageDataGenerator(
+        rotation_range=50,
+        width_shift_range=0.25,
+        height_shift_range=0.25,
+        zoom_range=0.25,
+        horizontal_flip=True,
+        fill_mode='nearest')
+
+    for image, label in zip(images, labels):
+        x = img_to_array(image)
+        x = x.reshape((1,) + x.shape)
+        count = 0
+        for batch in data_aug.flow(x, batch_size=1,
+                                   save_to_dir=f'files\\augmented\\{label}', save_prefix=f"{label}{count}", save_format='jpeg'):
+            count += 1
+            if count == 4:  # number of new images to make
+                break
 
 
 def save_input():  # pickling images and labels to prevent reloading from rawdata every time
@@ -76,4 +114,6 @@ def grayscale(images):
         grays.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
     return np.array(grays)
 
+
 # save_input()
+# augment_images()

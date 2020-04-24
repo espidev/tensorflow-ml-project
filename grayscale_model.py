@@ -11,7 +11,7 @@
 
 # mpl.use('tkagg')
 
-# IMG_SIZE = 150
+# IMG_SIZE = 256
 
 
 # def get_classes():
@@ -50,42 +50,83 @@
 
 
 # def test_model(model, test_data, test_labels):
-#     test_loss, test_acc = model.evaluate(test_data, test_labels)
+#     test_loss, test_acc, a = model.evaluate(test_data, test_labels)
 
 #     print('Test accuracy:', test_acc)
 #     # predictions = model.predict(test_data)
 #     # print(predictions[0])
 
 
-# images = input.load("UCMercedImages")
-# grays = input.grayscale(images)
-# labels = np.array(input.load("UCMercedLabels"))
+# def plot_history(history):
+#     hist = pd.DataFrame(history.history)
+#     hist['epoch'] = history.epoch
 
-# index = []  # mapping number label (0-27) to text label ("agriculture")
-# file = open("landuses.txt", "r")
-# landuses = file.readlines()
-# for landuse in landuses:
-#     index.append(landuse[:-1])
-# # baseline grayscale model
+#     plt.figure()
+#     plt.xlabel('Epoch')
+#     plt.ylabel('Loss')
+#     plt.plot(hist['epoch'], hist['loss'], label='Train Error')
+#     plt.plot(hist['epoch'], hist['val_loss'], label='Val Error')
+#     plt.ylim([0, 0.5])
+#     plt.legend()
 
-# combined = list(zip(grays, labels))
-# np.random.shuffle(combined)
-# train_data, train_label = zip(*combined)
-# train_data = np.array(train_data)
-# train_data = train_data/255  # normalize data to 0-1
-# train_data = train_data.reshape(2100, 256, 256, 1)
-# train_label = np.array(train_label)
+#     plt.figure()
+#     plt.xlabel('Epoch')
+#     plt.ylabel('accuracy')
+#     plt.plot(hist['epoch'], hist['accuracy'], label='Train Acc')
+#     plt.plot(hist['epoch'], hist['val_accuracy'], label='Val Acc')
+#     plt.ylim([0, 1])
+#     plt.legend()
+#     plt.show()
 
-# test_data = train_data[2000:]  # take 100 datapoints for testing
-# test_label = train_label[2000:]
 
-# train_data = train_data[:2000]
-# train_label = train_label[:2000]
+# def process_data():
+#     images = input.load("files\\UCMercedImages")
+#     labels = input.load("files\\UCMercedLabels")
+#     #grays = input.grayscale(images)
+#     grays = []
+#     for image in images:
+#         grays.append(img_to_array(cv2.cvtColor(cv2.resize(
+#             image, (IMG_SIZE, IMG_SIZE)), cv2.COLOR_BGR2GRAY)))
 
-# print(train_data.shape)
-# print(train_label.shape)
-# print(test_data.shape)
-# print(test_label.shape)
+#     combined = list(zip(grays, labels))
+#     np.random.seed(19)
+#     np.random.shuffle(combined)
+
+#     train_data, train_labels = zip(*combined)
+#     train_data = np.array(train_data)
+#     train_data = train_data / 255
+#     train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 1)
+#     train_labels = np.array(train_labels)
+
+#     test_data = train_data[2000:]
+#     test_labels = train_labels[2000:]
+
+#     train_data = train_data[:2000]
+#     train_labels = train_labels[:2000]
+
+#     print(train_data.shape)
+#     print(train_labels.shape)
+#     print(test_data.shape)
+#     print(test_labels.shape)
+
+#     # model, history = train_model(
+#     #     train_data, train_labels, test_data, test_labels)
+
+#     # test_model(model, test_data, test_labels)
+
+#     # print("Saving model...")
+#     # model.save('files\\test.h5')
+#     # print("Saved.")
+
+#     # plot_history(history)
+
+#     new_model = tf.keras.models.load_model('files\\test.h5')
+#     new_model.summary()
+#     test_model(new_model, test_data, test_labels)
+
+
+# process_data()
+
 
 # # plt.figure(figsize=(10, 10))
 # # for i in range(25):
@@ -98,17 +139,18 @@
 # # plt.show()
 
 
-# history = baseline_model.fit(train_data,
-#                              train_label,
-#                              epochs=10,
-#                              batch_size=10,
-#                              validation_split=0.1,
-#                              verbose=2)
+# # history = baseline_model.fit(train_data,
+# #                              train_label,
+# #                              epochs=10,
+# #                              batch_size=10,
+# #                              validation_split=0.1,
+# #                              verbose=2)
 
-# predictions = baseline_model.predict(test_data)
+# # predictions = baseline_model.predict(test_data)
 
-# print(predictions[0:10])
-# print(test_label[0:10])
+# # print(predictions[0:10])
+# # print(test_label[0:10])
+
 # # plt.figure(figsize=(10, 10))
 # # for i in range(25):
 # #     plt.subplot(5, 5, i+1)
@@ -119,8 +161,8 @@
 # #     plt.xlabel(f"{index[test_label[i]]}, {predictions[i]}")
 # # plt.show()
 
-# print(history)
+# # print(history)
 
 # # save model
-# baseline_model.save('baseline_model.h5')
-# print('Saved model.')
+# # baseline_model.save('baseline_model.h5')
+# # print('Saved model.')

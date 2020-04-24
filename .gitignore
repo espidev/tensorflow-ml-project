@@ -132,6 +132,7 @@ dmypy.json
 .sh
 .vscode/
 rawdata/
+augmented/
 UCMercedImages
 UCMercedLabels
 baseline_model.h5

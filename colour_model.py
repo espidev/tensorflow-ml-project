@@ -1,17 +1,13 @@
 import input
 import tensorflow as tf
-import numpy
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import cv2
-import os  # delete
 import keras
 from keras import layers  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
-from keras.models import load_model
-from keras.initializers import glorot_uniform
-from keras.utils import CustomObjectScope
 
 mpl.use('tkagg')
 
@@ -19,8 +15,8 @@ IMG_SIZE = 150
 
 
 def get_classes():
-    for landuse in open("files\\landuses.txt", "r").readLines():
-        yield landuse
+    for landuse in open("files\\landuses.txt", "r").readlines():
+        yield landuse[:-1]
 
 
 def get_model():
@@ -73,7 +69,7 @@ def plot_history(history):
     plt.ylabel('Loss')
     plt.plot(hist['epoch'], hist['loss'], label='Train Error')
     plt.plot(hist['epoch'], hist['val_loss'], label='Val Error')
-    plt.ylim([0, 0.5])
+    plt.ylim([0, 1])
     plt.legend()
 
     plt.figure()
@@ -89,19 +85,20 @@ def plot_history(history):
 def process_data():
     images = input.load("files\\UCMercedImages")
     labels = input.load("files\\UCMercedLabels")
-    # grays = input.grayscale(images)
+
     colours = []
     for image in images:
         colours.append(img_to_array(cv2.resize(image, (IMG_SIZE, IMG_SIZE))))
 
     combined = list(zip(colours, labels))
-    numpy.random.shuffle(combined)
+    np.random.seed(18)
+    np.random.shuffle(combined)
 
     train_data, train_labels = zip(*combined)
-    train_data = numpy.array(train_data)
+    train_data = np.array(train_data)
     train_data = train_data / 255
     train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
-    train_labels = numpy.array(train_labels)
+    train_labels = np.array(train_labels)
 
     test_data = train_data[2000:]
     test_labels = train_labels[2000:]
@@ -114,19 +111,18 @@ def process_data():
     print(test_data.shape)
     print(test_labels.shape)
 
-    model, history = train_model(
-        train_data, train_labels, test_data, test_labels)
-    test_model(model, test_data, test_labels)
+    # model, history = train_model(
+    #     train_data, train_labels, test_data, test_labels)
+    # test_model(model, test_data, test_labels)
 
-    print("Saving model...")
-    model.save('files\\colour_model.h5')
-    print("Saved.")
+    # print("Saving model...")
+    # model.save('files\\colour_model.h5')
+    # print("Saved.")
 
-    plot_history(history)
+    # plot_history(history)
+    new_model = tf.keras.models.load_model('files\\colour_model.h5')
+    new_model.summary()
+    test_model(new_model, test_data, test_labels)
 
 
-# process_data()
-# with CustomObjectScope({'GlorotUniform': glorot_uniform()}):
-#     new_model = load_model('files\\colour_model.h5')
-new_model = tf.keras.models.load_model('files\\colour_model.h5')
-new_model.summary()
+process_data()
