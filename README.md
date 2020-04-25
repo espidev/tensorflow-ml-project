@@ -10,33 +10,54 @@ The ultimate goal of this project is to take high-definition satellite images of
 
 ### Data
 
-Our data comes from the UC Merced Land Use Dataset (http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various urban sites across the United States. Each pixel represents one square foot.
+The first part of our dataset comes from the UC Merced Land Use Dataset (http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various sites across the United States. Each pixel represents one square foot. There are a total of 21 classes, with 100 images per class for a total of 2,100 images.
 
 Citation: Yi Yang and Shawn Newsam, "Bag-Of-Visual-Words and Spatial Extensions for Land-Use Classification," ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (ACM GIS), 2010.
 
-The dataset contains 21 different classes of land use, with 100 images under each class for a total of 2,100 images. The different classes are as follows:
 
-* agricultural
-* airplane
-* baseballdiamond
+The second part of our dataset comes from the NWPU-RESISC45 dataset (http://www.escience.cn/people/JunweiHan/NWPU-RESISC45.html) which also has 256x256 resolution images created by the Northwestern Polytechnical University (NWPU). Images come from over 100 countries and a variety of regions. Within this dataset is 45 different classes, with 700 images per class for a total of 31,500 images. From a NWPU-RESISC45 dataset a few classes (e.g. palace, church, cloud, etc.) were omitted for being either irrelevant or too specific. 
+
+Citation: G. Cheng, J. Han, X. Lu. Remote Sensing Image Scene Classification: Benchmark and State of the Art. Proceedings of the IEEE.
+
+
+The third part of our dataset comes from senseFly (https://www.sensefly.com/education/datasets/?dataset=1502). Only a few hundred images were taken from the agricultural and airport datasets to bolster our image count.
+
+In the end, there are a total of 26,920 images in our dataset with 34 classes as follows:
+
+* agricultural    
+* airplane        
+* baseballdiamond 
+* basketballcourt 
 * beach
-* buildings
-* chaparral
+* bridge
+* chaparral       
 * denseresidential
+* desert
 * forest
 * freeway
 * golfcourse
 * harbor
+* industrial
 * intersection
+* island
+* lake
 * mediumresidential
 * mobilehomepark
+* mountain
 * overpass
 * parkinglot
+* powerstation
 * river
+* roundabout
 * runway
+* seaice
+* ship
+* snowberg
 * sparseresidential
+* stadium
 * storagetanks
 * tenniscourt
+* trackfield
 
 ### Data Processing
 An important choice is whether or not colour should be factored into calculations. Since some land formations look very similar under greyscale, we will be including it. This will requiring normalization of all pixels into RGB, which means each pixel with have 3 values between 0 and 255.
