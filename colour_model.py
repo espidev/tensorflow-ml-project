@@ -14,11 +14,6 @@ mpl.use('tkagg')
 IMG_SIZE = 150
 
 
-def get_classes():
-    for landuse in open("files\\landuses.txt", "r").readlines():
-        yield landuse[:-1]
-
-
 def get_model():
     model = keras.Sequential([
         layers.Conv2D(32, (3, 3), input_shape=(
@@ -29,7 +24,7 @@ def get_model():
         layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dense(128, activation=tf.nn.relu), # consider changing
+        layers.Dense(128, activation=tf.nn.relu),  # consider changing
         # keras.layers.Dropout(0.5),
         layers.Dense(21, activation=tf.nn.softmax)
     ])
@@ -83,8 +78,8 @@ def plot_history(history):
 
 
 def process_data():
-    images = input.load("files\\UCMercedImages")
-    labels = input.load("files\\UCMercedLabels")
+    images = input.load("files\\BaseImageDataPickle")
+    labels = input.load("files\\BaseLabelDataPickle")
 
     colours = []
     for image in images:

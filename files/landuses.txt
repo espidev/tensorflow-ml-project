@@ -1,10 +1,10 @@
-agricultural    
-airplane        
-baseballdiamond 
-basketballcourt 
+agricultural
+airplane
+baseballdiamond
+basketballcourt
 beach
 bridge
-chaparral       
+chaparral
 denseresidential
 desert
 forest

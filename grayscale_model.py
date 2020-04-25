@@ -14,11 +14,6 @@
 # IMG_SIZE = 256
 
 
-# def get_classes():
-#     for landuse in open("landuses.txt", "r").readLines():
-#         yield landuse
-
-
 # def get_model():
 #     model = keras.Sequential([
 #         keras.layers.Conv2D(32, (3, 3), activation=tf.nn.relu,
