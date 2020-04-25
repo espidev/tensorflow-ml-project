@@ -130,7 +130,7 @@ dmypy.json
 
 *.idea
 *.sh
-*.h5
+#*.h5
 .vscode/
 rawdata/
 augmented/
