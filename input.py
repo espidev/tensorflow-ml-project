@@ -115,5 +115,9 @@ def grayscale(images):
     return np.array(grays)
 
 
+print(os.listdir("files\\rawdata"))
+for name in os.listdir("files\\rawdata"):
+    print(f"{name}")
+
 # save_input()
 # augment_images()

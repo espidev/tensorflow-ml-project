@@ -128,12 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.idea
-.sh
+*.idea
+*.sh
+*.h5
 .vscode/
 rawdata/
 augmented/
 UCMercedImages
 UCMercedLabels
-baseline_model.h5
-/files
