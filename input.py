@@ -3,21 +3,22 @@ import cv2  # noqa
 import os
 import os.path  # noqa
 import pickle
+import PIL
 from tqdm import tqdm  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
+
 
 IMG_SIZE = (150, 150)  # image resolution
 AUGMENT_SIZE = 1  # number of images to produce for each image from base dataset
 
 
-def upload_images():  # read from rawdata directory
+def upload_images(dir="rawdata"):  # read from rawdata directory
     print("Loading Images...")
     landuses = [landuse for landuse in get_classes()]
     for i in tqdm(range(len(landuses))):
-        landuses[i] = landuses[i]  # landuses.txt must end with blank line
-        for name in os.listdir(f"files\\rawdata\\{landuses[i]}"):
+        for name in os.listdir(f"files\\{dir}\\{landuses[i]}"):
             img = cv2.imread(
-                f"files\\rawdata\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
+                f"files\\{dir}\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
             img = cv2.resize(img, IMG_SIZE)
             yield img, landuses[i]
 
@@ -42,9 +43,6 @@ def augment_images():
         horizontal_flip=True,
         fill_mode='nearest')
 
-    augmented_images = []
-    augmented_labels = []
-
     for image, label in tqdm(zip(images, labels)):
         x = img_to_array(image)
         x = x.reshape((1,) + x.shape)
@@ -53,22 +51,17 @@ def augment_images():
                                    save_to_dir=f"files\\augmented\\{landuses[label]}",
                                    save_prefix=f"{label}",
                                    save_format='jpeg'):
-            augmented_images.append(batch[0])
-            augmented_labels.append(label)
             count += 1
             if count == AUGMENT_SIZE:  # number of new images to make
                 break
 
-    aug_image_pickle_file = open("files\\AugmentedImageDataPickle", "wb")
-    aug_label_pickle_file = open("files\\AugmentedLabelDataPickle", "wb")
-    pickle.dump(augmented_images, aug_image_pickle_file)
-    pickle.dump(augmented_labels, aug_label_pickle_file)
-    aug_image_pickle_file.close()
-    aug_label_pickle_file.close()
+    save_input(dir="augmented", name="Augmented")
+
+# pickling images and labels to prevent reloading from rawdata every time
 
 
-def save_input():  # pickling images and labels to prevent reloading from rawdata every time
-    images, labels = zip(*upload_images())
+def save_input(dir="rawdata", name="Base"):
+    images, labels = zip(*upload_images(dir))
     images = list(images)
     labels = list(labels)
 
@@ -81,8 +74,8 @@ def save_input():  # pickling images and labels to prevent reloading from rawdat
             current = label
         num_labels.append(index)
 
-    image_pickle_file = open("files\\BaseImageDataPickle", "wb")
-    label_pickle_file = open("files\\BaseLabelDataPickle", "wb")
+    image_pickle_file = open(f"files\\{name}ImageDataPickle", "wb")
+    label_pickle_file = open(f"files\\{name}LabelDataPickle", "wb")
     pickle.dump(images, image_pickle_file)
     pickle.dump(num_labels, label_pickle_file)
     image_pickle_file.close()
@@ -96,7 +89,7 @@ def load(filename):
     return obj
 
 
-def get_classes():
+def get_classes():  # landuses.txt must end with blank line
     file = open("files\\landuses.txt", "r")
     for landuse in file.readlines():
         yield landuse[:-1]
@@ -129,10 +122,13 @@ def grayscale(images):
 
 # Deleted augmented and rawdata folders. Extract
 # new rawdata folder. Run everything commented above. Press any key to exit image windows.
-# It will take a while. Let me know if anything goes wrong. Ignore below for now
+# It will take a while. Let me know if anything goes wrong.
 
 # augment_images()
 # aug_images = load("files\\AugmentedImageDataPickle")
 # print(np.array(aug_images).shape)
 # show_images = show_images(
-#     [aug_images[0], aug_images[9], aug_images[4000], aug_images[5000], aug_images[20000]])
+#     [aug_images[i] for i in range(0, 24000, 1000)])
+
+
+# augment images works now. Uncomment above and run.
