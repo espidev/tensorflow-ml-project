@@ -25,8 +25,8 @@ def get_model():
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dense(128, activation=tf.nn.relu),  # consider changing
-        # keras.layers.Dropout(0.5),
-        layers.Dense(21, activation=tf.nn.softmax)
+        keras.layers.Dropout(0.3),
+        layers.Dense(34, activation=tf.nn.softmax)
     ])
 
     model.compile(optimizer='adam',
@@ -78,8 +78,8 @@ def plot_history(history):
 
 
 def process_data():
-    images = input.load("files\\BaseImageDataPickle")
-    labels = input.load("files\\BaseLabelDataPickle")
+    images = input.load("files/ImageDataPickle")
+    labels = input.load("files/LabelDataPickle")
 
     colours = []
     for image in images:
@@ -92,32 +92,32 @@ def process_data():
     train_data, train_labels = zip(*combined)
     train_data = np.array(train_data)
     train_data = train_data / 255
-    train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
+    # train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
     train_labels = np.array(train_labels)
 
-    test_data = train_data[2000:]
-    test_labels = train_labels[2000:]
+    test_data = train_data[18000:]
+    test_labels = train_labels[18000:]
 
-    train_data = train_data[:2000]
-    train_labels = train_labels[:2000]
+    train_data = train_data[:18000]
+    train_labels = train_labels[:18000]
 
     print(train_data.shape)
     print(train_labels.shape)
     print(test_data.shape)
     print(test_labels.shape)
 
-    # model, history = train_model(
-    #     train_data, train_labels, test_data, test_labels)
-    # test_model(model, test_data, test_labels)
+    model, history = train_model(
+        train_data, train_labels, test_data, test_labels)
+    test_model(model, test_data, test_labels)
 
-    # print("Saving model...")
-    # model.save('files\\colour_model.h5')
-    # print("Saved.")
+    print("Saving model...")
+    model.save('files\\colour_model.h5')
+    print("Saved.")
 
-    # plot_history(history)
-    new_model = tf.keras.models.load_model('files\\colour_model.h5')
-    new_model.summary()
-    test_model(new_model, test_data, test_labels)
+    plot_history(history)
+    # new_model = tf.keras.models.load_model('files/colour_model.h5')
+    # new_model.summary()
+    # test_model(new_model, test_data, test_labels)
 
 
 process_data()
