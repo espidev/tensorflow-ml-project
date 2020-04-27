@@ -4,9 +4,13 @@ import tensorflow as tf
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import decode_predictions
+
+
 model = VGG19()
 print(model.summary())
 model.save("files/imagenetVGG19.h5")
+# RUN THIS, then uncomment below and comment this section
+
 
 # model = tf.keras.models.load_model('files/imagenetVGG19.h5')
 # print(model.summary())
@@ -21,7 +25,8 @@ model.save("files/imagenetVGG19.h5")
 # img = preprocess_input(img)
 
 # prediction = model(img)
-
-# label = decode_predictions(prediction) #does not work
-# label = label[0][0]
-# print('%s (%.2f%%)' % (label[1], label[2]*100))
+# print(prediction.shape)
+# label = decode_predictions(prediction.numpy())  # does not work
+# label = label[0:5][0]  # print top 5
+# for x in label:
+#     print(f"{x[1]} {x[2]}")
