@@ -112,7 +112,7 @@ def process_data():
     test_model(model, test_data, test_labels)
 
     print("Saving model...")
-    model.save('files\\colour_model2.h5')
+    model.save('files/colour_model2.h5')
     print("Saved.")
 
     plot_history(history)

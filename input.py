@@ -16,24 +16,24 @@ def upload_images(dir="rawdata"):  # read from rawdata directory
     print("Loading Images...")
     landuses = [landuse for landuse in get_classes()]
     for i in tqdm(range(len(landuses))):
-        for name in os.listdir(f"files\\{dir}\\{landuses[i]}"):
+        for name in os.listdir(f"files/{dir}/{landuses[i]}"):
             img = cv2.imread(
-                f"files\\{dir}\\{landuses[i]}\\{name}", cv2.IMREAD_UNCHANGED)
+                f"files/{dir}/{landuses[i]}/{name}", cv2.IMREAD_UNCHANGED)
             img = cv2.resize(img, IMG_SIZE)
             yield img, landuses[i]
 
 
 def augment_images():
-    if not os.path.exists('files\\augmented'):
-        os.makedirs('files\\augmented')
+    if not os.path.exists('files/augmented'):
+        os.makedirs('files/augmented')
     landuses = [landuse for landuse in get_classes()]
     for landuse in landuses:
-        path = f'files\\augmented\\{landuse}'
+        path = f'files/augmented/{landuse}'
         if not os.path.exists(path):
             os.makedirs(path)
 
-    images = load("files\\BaseImageDataPickle")
-    labels = load("files\\BaseLabelDataPickle")
+    images = load("files/BaseImageDataPickle")
+    labels = load("files/BaseLabelDataPickle")
 
     data_aug = ImageDataGenerator(
         rotation_range=50,
@@ -48,7 +48,7 @@ def augment_images():
         x = x.reshape((1,) + x.shape)
         count = 0
         for batch in data_aug.flow(x, batch_size=1,
-                                   save_to_dir=f"files\\augmented\\{landuses[label]}",
+                                   save_to_dir=f"files/augmented/{landuses[label]}",
                                    save_prefix=f"{label}",
                                    save_format='jpeg'):
             count += 1
@@ -74,8 +74,8 @@ def save_input(dir="rawdata", name="Base"):
             current = label
         num_labels.append(index)
 
-    image_pickle_file = open(f"files\\{name}ImageDataPickle", "wb")
-    label_pickle_file = open(f"files\\{name}LabelDataPickle", "wb")
+    image_pickle_file = open(f"files/{name}ImageDataPickle", "wb")
+    label_pickle_file = open(f"files/{name}LabelDataPickle", "wb")
     pickle.dump(images, image_pickle_file)
     pickle.dump(num_labels, label_pickle_file)
     image_pickle_file.close()
@@ -90,7 +90,7 @@ def load(filename):
 
 
 def get_classes():  # landuses.txt must end with blank line
-    file = open("files\\landuses.txt", "r")
+    file = open("files/landuses.txt", "r")
     for landuse in file.readlines():
         yield landuse[:-1]
     file.close()
@@ -116,8 +116,8 @@ def grayscale(images):
 
 
 # save_input()
-# images = load("files\\ImageDataPickle")
-# labels = load("files\\LabelDataPickle")
+# images = load("files/ImageDataPickle")
+# labels = load("files/LabelDataPickle")
 # show_images([images[0], images[9], images[4000], images[5000], images[20000]])
 
 # Deleted augmented and rawdata folders. Extract
@@ -125,7 +125,7 @@ def grayscale(images):
 # It will take a while. Let me know if anything goes wrong.
 
 # augment_images()
-# aug_images = load("files\\AugmentedImageDataPickle")
+# aug_images = load("files/AugmentedImageDataPickle")
 # print(np.array(aug_images).shape)
 # show_images = show_images(
 #     [aug_images[i] for i in range(0, 24000, 1000)])
