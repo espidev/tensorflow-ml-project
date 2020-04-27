@@ -20,6 +20,7 @@ def get_model():
             IMG_SIZE, IMG_SIZE, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, (3, 3), activation=tf.nn.relu),
+        layers.Conv2D(32, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, (3, 3), activation=tf.nn.relu),
         layers.MaxPooling2D(pool_size=(2, 2)),
@@ -29,7 +30,7 @@ def get_model():
         layers.Dense(34, activation=tf.nn.softmax)
     ])
 
-    model.compile(optimizer='adam',
+    model.compile(optimizer='Adamax',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy', 'sparse_categorical_crossentropy'])
     model.summary()
@@ -78,15 +79,15 @@ def plot_history(history):
 
 
 def process_data():
-    images = input.load("files/ImageDataPickle")
-    labels = input.load("files/LabelDataPickle")
+    images = input.load("files/BaseImageDataPickle")
+    labels = input.load("files/BaseLabelDataPickle")
 
-    colours = []
-    for image in images:
-        colours.append(img_to_array(cv2.resize(image, (IMG_SIZE, IMG_SIZE))))
+    colours = images  # []
+    # for image in images:
+    #     colours.append(img_to_array(image))
 
     combined = list(zip(colours, labels))
-    np.random.seed(18)
+    np.random.seed(19)
     np.random.shuffle(combined)
 
     train_data, train_labels = zip(*combined)
@@ -95,11 +96,11 @@ def process_data():
     # train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
     train_labels = np.array(train_labels)
 
-    test_data = train_data[18000:]
-    test_labels = train_labels[18000:]
+    test_data = train_data[21000:]
+    test_labels = train_labels[21000:]
 
-    train_data = train_data[:18000]
-    train_labels = train_labels[:18000]
+    train_data = train_data[:21000]
+    train_labels = train_labels[:21000]
 
     print(train_data.shape)
     print(train_labels.shape)
@@ -111,10 +112,11 @@ def process_data():
     test_model(model, test_data, test_labels)
 
     print("Saving model...")
-    model.save('files\\colour_model.h5')
+    model.save('files\\colour_model2.h5')
     print("Saved.")
 
     plot_history(history)
+
     # new_model = tf.keras.models.load_model('files/colour_model.h5')
     # new_model.summary()
     # test_model(new_model, test_data, test_labels)
