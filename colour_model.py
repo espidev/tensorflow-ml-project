@@ -30,19 +30,30 @@ def get_model():
         layers.Dense(34, activation=tf.nn.softmax)
     ])
 
-    model.compile(optimizer='Adamax',
+    model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy', 'sparse_categorical_crossentropy'])
     model.summary()
     return model
 
 
-def train_model(train_data, train_labels, test_data, test_labels):
-    model = get_model()
+def load_model(name):
+    model = tf.keras.models.load_model(
+        f'files/{name}.h5', custom_objects={'softmax_v2': tf.nn.softmax})
+    model.summary()
+    return model
 
+
+def save_model(model, name):
+    print("Saving model...")
+    model.save(f'files/{name}.h5')
+    print("Saved.")
+
+
+def train_model(model, train_data, train_labels, test_data, test_labels):
     return model, model.fit(train_data,
                             train_labels,
-                            epochs=10,
+                            epochs=1,
                             # batch_size=512,
                             validation_split=0.2,
                             verbose=2)
@@ -50,7 +61,6 @@ def train_model(train_data, train_labels, test_data, test_labels):
 
 def test_model(model, test_data, test_labels):
     test_loss, test_acc, a = model.evaluate(test_data, test_labels)
-
     print('Test accuracy:', test_acc)
     # predictions = model.predict(test_data)
     # print(predictions[0])
@@ -78,22 +88,18 @@ def plot_history(history):
     plt.show()
 
 
-def process_data():
-    images = input.load("files/BaseImageDataPickle")
+def run(model):
+    colours = input.load("files/BaseImageDataPickle")
     labels = input.load("files/BaseLabelDataPickle")
-
-    colours = images  # []
-    # for image in images:
-    #     colours.append(img_to_array(image))
 
     combined = list(zip(colours, labels))
     np.random.seed(19)
     np.random.shuffle(combined)
 
     train_data, train_labels = zip(*combined)
-    train_data = np.array(train_data)
+    train_data = np.array(train_data, dtype="float32")
+    # instead of float64, reduce memory usage
     train_data = train_data / 255
-    # train_data = train_data.reshape(2100, IMG_SIZE, IMG_SIZE, 3)
     train_labels = np.array(train_labels)
 
     test_data = train_data[21000:]
@@ -102,24 +108,18 @@ def process_data():
     train_data = train_data[:21000]
     train_labels = train_labels[:21000]
 
-    print(train_data.shape)
-    print(train_labels.shape)
-    print(test_data.shape)
-    print(test_labels.shape)
+    print("Train Data:", train_data.shape)
+    print("Train Label:", train_labels.shape)
+    print("Test Data:", test_data.shape)
+    print("Train Label:", test_labels.shape)
 
-    model, history = train_model(
-        train_data, train_labels, test_data, test_labels)
-    test_model(model, test_data, test_labels)
+    trained_model, history = train_model(
+        model, train_data, train_labels, test_data, test_labels)
 
-    print("Saving model...")
-    model.save('files/colour_model2.h5')
-    print("Saved.")
-
+    test_model(trained_model, test_data, test_labels)
     plot_history(history)
 
-    # new_model = tf.keras.models.load_model('files/colour_model.h5')
-    # new_model.summary()
-    # test_model(new_model, test_data, test_labels)
 
-
-process_data()
+#model = get_model()
+model = load_model("colour_model2")
+run(model)
