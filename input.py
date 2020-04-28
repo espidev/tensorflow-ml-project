@@ -8,7 +8,7 @@ from tqdm import tqdm  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 
 
-IMG_SIZE = (150, 150)  # image resolution
+IMG_SIZE = (224, 224)  # image resolution
 AUGMENT_SIZE = 1  # number of images to produce for each image from base dataset
 
 
@@ -116,8 +116,8 @@ def grayscale(images):
 
 
 # save_input()
-# images = load("files/ImageDataPickle")
-# labels = load("files/LabelDataPickle")
+# images = load("files/BaseImageDataPickle")
+# labels = load("files/BaseLabelDataPickle")
 # show_images([images[0], images[9], images[4000], images[5000], images[20000]])
 
 # Deleted augmented and rawdata folders. Extract
@@ -130,5 +130,8 @@ def grayscale(images):
 # show_images = show_images(
 #     [aug_images[i] for i in range(0, 24000, 1000)])
 
-
 # augment images works now. Uncomment above and run.
+
+
+# load and resize VGG19 images
+# save_input(name="VGG19")

@@ -138,3 +138,5 @@ BaseImageDataPickle
 BaseLabelDataPickle
 AugmentedImageDataPickle
 AugmentedLabelDataPickle
+VGG19ImageDataPickle
+VGG19LabelDataPickle
