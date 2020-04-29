@@ -7,7 +7,7 @@ from keras import layers
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import decode_predictions
-
+import pickle
 
 # model = VGG19(include_top=False, weights="imagenet")  # remove dense layers
 # print(model.summary())
@@ -23,32 +23,46 @@ print(vggmodel.summary())
 
 colours = input.load("files/VGG19ImageDataPickle")
 labels = input.load("files/VGG19LabelDataPickle")
+print(np.array(colours).shape)
 
-temp = []
-for i in range(5):
-    temp.append(colours[i])  # add 5 images to a test batch
+# temp = []
+# for i in range(5):
+#     temp.append(colours[i])  # add 5 images to a test batch
 
-temp = np.array(temp)
-print(temp.shape)
+# temp = np.array(temp)
+# print(temp.shape)
 
-new_input = vggmodel.predict(temp)
-# new_input = np.array(new_input)
-# (5, 7, 7, 512) this is the input for our own neural network
-print(new_input.shape)
+# new_input = vggmodel.predict(temp)
+# # #(5, 7, 7, 512) this is the input for our own neural network
+# print(new_input.shape)
+
+conv_data = []
+for img in colours:
+    conv = vggmodel.predict_on_batch(img[np.newaxis, ])
+    conv = conv[0]
+    conv_data.append(conv)
+
+
+cd = np.array(conv_data)
+print(cd.shape)
+
+pickle_file = open(f"files/VGG19ConvDataPickle", "wb")
+pickle.dump(conv_data, pickle_file)
+pickle_file.close()
 
 # training model TO DO
 
-model = keras.Sequential([
-    layers.Flatten(input_shape=(7, 7, 512)),
-    layers.Dense(256, activation=tf.nn.relu),  # consider changing
-    keras.layers.Dropout(0.3),
-    layers.Dense(34, activation=tf.nn.softmax)
-])
+# model = keras.Sequential([
+#     layers.Flatten(input_shape=(7, 7, 512)),
+#     layers.Dense(256, activation=tf.nn.relu),  # consider changing
+#     keras.layers.Dropout(0.3),
+#     layers.Dense(34, activation=tf.nn.softmax)
+# ])
 
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy', 'sparse_categorical_crossentropy'])
-model.summary()
+# model.compile(optimizer='adam',
+#               loss='sparse_categorical_crossentropy',
+#               metrics=['accuracy', 'sparse_categorical_crossentropy'])
+# model.summary()
 
 
 # img = np.array(img)[np.newaxis, ]

@@ -121,5 +121,5 @@ def run(model):
 
 
 #model = get_model()
-model = load_model("colour_model2")
-run(model)
+# model = load_model("colour_model2")
+# run(model)

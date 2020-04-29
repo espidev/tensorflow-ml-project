@@ -135,3 +135,7 @@ def grayscale(images):
 
 # load and resize VGG19 images
 # save_input(name="VGG19")
+
+# vggimgs = load("files/VGG19ImageDataPickle")
+# vggimgs = np.array(vggimgs)
+# print(vggimgs.shape)
