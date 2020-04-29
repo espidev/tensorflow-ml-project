@@ -8,7 +8,7 @@ from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import decode_predictions
 import pickle
-
+from tqdm import tqdm
 # model = VGG19(include_top=False, weights="imagenet")  # remove dense layers
 # print(model.summary())
 # model.save("files/imagenetVGG19.h5")
@@ -37,7 +37,7 @@ print(np.array(colours).shape)
 # print(new_input.shape)
 
 conv_data = []
-for img in colours:
+for img in tqdm(colours):  # tqdm
     conv = vggmodel.predict_on_batch(img[np.newaxis, ])
     conv = conv[0]
     conv_data.append(conv)
