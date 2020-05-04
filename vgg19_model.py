@@ -21,9 +21,9 @@ from tqdm import tqdm
 vggmodel = tf.keras.models.load_model('files/imagenetVGG19.h5')
 print(vggmodel.summary())
 
-colours = input.load("files/VGG19ImageDataPickle")
+# colours = input.load("files/VGG19ImageDataPickle")
 labels = input.load("files/VGG19LabelDataPickle")
-print(np.array(colours).shape)
+# print(np.array(colours).shape)
 
 # temp = []
 # for i in range(5):
@@ -36,34 +36,47 @@ print(np.array(colours).shape)
 # # #(5, 7, 7, 512) this is the input for our own neural network
 # print(new_input.shape)
 
-conv_data = []
-for img in tqdm(colours):  # tqdm
-    conv = vggmodel.predict_on_batch(img[np.newaxis, ])
-    conv = conv[0]
-    conv_data.append(conv)
+# conv_data = []
+# for img in tqdm(colours):  # tqdm
+#     conv = vggmodel.predict_on_batch(img[np.newaxis, ])
+#     conv = conv[0]
+#     conv_data.append(conv)
 
 
-cd = np.array(conv_data)
-print(cd.shape)
+# cd = np.array(conv_data)
+# print(cd.shape)
 
-pickle_file = open(f"files/VGG19ConvDataPickle", "wb")
-pickle.dump(conv_data, pickle_file)
-pickle_file.close()
+# pickle_file = open(f"files/VGG19ConvDataPickle", "wb")
+# pickle.dump(conv_data, pickle_file)
+# pickle_file.close()
 
+conv_data = input.load("files/VGG19ConvDataPickle")
+conv_data = np.array(conv_data)
+print(conv_data.shape)
+
+train_data = conv_data[:1000]
+train_labels = np.array(labels)[:1000]
+print(train_data.shape)
+print(train_labels.shape)
 # training model TO DO
 
-# model = keras.Sequential([
-#     layers.Flatten(input_shape=(7, 7, 512)),
-#     layers.Dense(256, activation=tf.nn.relu),  # consider changing
-#     keras.layers.Dropout(0.3),
-#     layers.Dense(34, activation=tf.nn.softmax)
-# ])
+model = keras.Sequential([
+    layers.Flatten(input_shape=(7, 7, 512)),
+    layers.Dense(256, activation=tf.nn.relu),  # consider changing
+    keras.layers.Dropout(0.3),
+    layers.Dense(34, activation=tf.nn.softmax)
+])
 
-# model.compile(optimizer='adam',
-#               loss='sparse_categorical_crossentropy',
-#               metrics=['accuracy', 'sparse_categorical_crossentropy'])
-# model.summary()
-
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy', 'sparse_categorical_crossentropy'])
+model.summary()
+model.fit(train_data,
+          train_labels,
+          epochs=5,
+          # batch_size=512,
+          validation_split=0.2,
+          verbose=2)
 
 # img = np.array(img)[np.newaxis, ]
 # img = img/255

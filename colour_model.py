@@ -1,15 +1,10 @@
-import input
+import inputs
+import model_tools as mt
 import tensorflow as tf
 import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import cv2
 import keras
 from keras import layers  # noqa
-from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 
-mpl.use('tkagg')
 
 IMG_SIZE = 150
 
@@ -33,93 +28,63 @@ def get_model():
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy', 'sparse_categorical_crossentropy'])
-    model.summary()
     return model
 
 
-def load_model(name):
-    model = tf.keras.models.load_model(
-        f'files/{name}.h5', custom_objects={'softmax_v2': tf.nn.softmax})
-    model.summary()
-    return model
+def run(model, mix=False, plot=False, test=False, save=False):
+    colours, labels = inputs.load("files/BaseCompressedData.npz")
 
+    if (mix):
+        augments, aug_labels = inputs.load("files/AugmentedCompressedData.npz")
+        print(augments.shape)
+        print(colours.shape)
+        mixed = np.concatenate((colours, augments), axis=0)
+        labels = np.concatenate((labels, aug_labels), axis=0)
+        print(mixed.shape)
+        print(labels.shape)
+        indices = np.arange(mixed.shape[0])
+        np.random.seed(0)
+        np.random.shuffle(indices)
 
-def save_model(model, name):
-    print("Saving model...")
-    model.save(f'files/{name}.h5')
-    print("Saved.")
+        mixed = mixed[indices]
+        labels = labels[indices]
+        mixed = mixed.astype("float16")
+        mixed = mixed/255.0
 
+        train_data = mixed[:45000]
+        train_labels = labels[:45000]
+        test_data = mixed[45000:]
+        test_labels = labels[45000:]
 
-def train_model(model, train_data, train_labels, test_data, test_labels):
-    return model, model.fit(train_data,
-                            train_labels,
-                            epochs=1,
-                            # batch_size=512,
-                            validation_split=0.2,
-                            verbose=2)
+    else:
+        indices = np.arange(colours.shape[0])
+        np.random.seed(0)
+        np.random.shuffle(indices)
 
+        colours = colours[indices]
+        labels = labels[indices]
+        colours = colours.astype("float16")
+        colours = colours/255.0
 
-def test_model(model, test_data, test_labels):
-    test_loss, test_acc, a = model.evaluate(test_data, test_labels)
-    print('Test accuracy:', test_acc)
-    # predictions = model.predict(test_data)
-    # print(predictions[0])
-
-
-def plot_history(history):
-    hist = pd.DataFrame(history.history)
-    hist['epoch'] = history.epoch
-
-    plt.figure()
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.plot(hist['epoch'], hist['loss'], label='Train Error')
-    plt.plot(hist['epoch'], hist['val_loss'], label='Val Error')
-    plt.ylim([0, 1])
-    plt.legend()
-
-    plt.figure()
-    plt.xlabel('Epoch')
-    plt.ylabel('accuracy')
-    plt.plot(hist['epoch'], hist['accuracy'], label='Train Acc')
-    plt.plot(hist['epoch'], hist['val_accuracy'], label='Val Acc')
-    plt.ylim([0, 1])
-    plt.legend()
-    plt.show()
-
-
-def run(model):
-    colours = input.load("files/BaseImageDataPickle")
-    labels = input.load("files/BaseLabelDataPickle")
-
-    combined = list(zip(colours, labels))
-    np.random.seed(19)
-    np.random.shuffle(combined)
-
-    train_data, train_labels = zip(*combined)
-    train_data = np.array(train_data, dtype="float32")
-    # instead of float64, reduce memory usage
-    train_data = train_data / 255
-    train_labels = np.array(train_labels)
-
-    test_data = train_data[21000:]
-    test_labels = train_labels[21000:]
-
-    train_data = train_data[:21000]
-    train_labels = train_labels[:21000]
+        train_data = colours[:22000]
+        train_labels = labels[:22000]
+        test_data = colours[22000:]
+        test_labels = labels[22000:]
 
     print("Train Data:", train_data.shape)
     print("Train Label:", train_labels.shape)
     print("Test Data:", test_data.shape)
     print("Train Label:", test_labels.shape)
 
-    trained_model, history = train_model(
-        model, train_data, train_labels, test_data, test_labels)
+    trained_model, history = mt.train_model(
+        model, train_data, train_labels, test_data, test_labels, epoch=7)
 
-    test_model(trained_model, test_data, test_labels)
-    plot_history(history)
-
-
-#model = get_model()
-# model = load_model("colour_model2")
-# run(model)
+    if (save):
+        if (mix):
+            mt.save_model(trained_model, "aug_colour_model")
+        else:
+            mt.save_model(trained_model, "colour_model")
+    if (test):
+        mt.test_model(trained_model, test_data, test_labels)
+    if (plot):
+        mt.plot_history(history)

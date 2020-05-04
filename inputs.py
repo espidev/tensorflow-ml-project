@@ -2,28 +2,60 @@ import numpy as np
 import cv2  # noqa
 import os
 import os.path  # noqa
-import pickle
-import PIL
+import msgpack  # noqa
 from tqdm import tqdm  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 
 
-IMG_SIZE = (224, 224)  # image resolution
-AUGMENT_SIZE = 1  # number of images to produce for each image from base dataset
+# retrieve landuse catgories
+def get_classes():
+    file = open("files/landuses.txt", "r")
+    for landuse in file.readlines():
+        yield landuse[:-1]  # landuses.txt must end with blank line
+    file.close()
 
 
-def upload_images(dir="rawdata"):  # read from rawdata directory
+# read from rawdata directory
+def upload(img_size=(150, 150), dir="rawdata"):
     print("Loading Images...")
     landuses = [landuse for landuse in get_classes()]
     for i in tqdm(range(len(landuses))):
         for name in os.listdir(f"files/{dir}/{landuses[i]}"):
             img = cv2.imread(
                 f"files/{dir}/{landuses[i]}/{name}", cv2.IMREAD_UNCHANGED)
-            img = cv2.resize(img, IMG_SIZE)
+            img = cv2.resize(img, img_size)
             yield img, landuses[i]
 
 
-def augment_images():
+# pickling images and labels to prevent re-uploading from rawdata every time
+def serialize(name="Base", dir="rawdata"):
+    images, labels = zip(*upload(dir=dir))
+    images = np.array(list(images))
+    labels = np.array(list(labels))
+
+    num_labels = []
+    current = labels[0]
+    index = 0
+    for label in labels:
+        if label != current:
+            index += 1
+            current = label
+        num_labels.append(index)
+    num_labels = np.array(num_labels)
+
+    with open(f"files/{name}CompressedData.npz", "wb") as image_file:
+        np.savez_compressed(image_file, images=images, labels=num_labels)
+
+
+# retrieve pickled images
+def load(filename):
+    with open(filename, "rb") as image_file:
+        arr = np.load(image_file)
+        return arr["images"], arr["labels"]
+
+
+# use keras image augmentation to decrease overfitting
+def augment(new=1):
     if not os.path.exists('files/augmented'):
         os.makedirs('files/augmented')
     landuses = [landuse for landuse in get_classes()]
@@ -32,11 +64,10 @@ def augment_images():
         if not os.path.exists(path):
             os.makedirs(path)
 
-    images = load("files/BaseImageDataPickle")
-    labels = load("files/BaseLabelDataPickle")
+    images, labels = load('files/BaseCompressedData.npz')
 
     data_aug = ImageDataGenerator(
-        rotation_range=50,
+        rotation_range=30,
         width_shift_range=0.25,
         height_shift_range=0.25,
         zoom_range=0.25,
@@ -52,51 +83,14 @@ def augment_images():
                                    save_prefix=f"{label}",
                                    save_format='jpeg'):
             count += 1
-            if count == AUGMENT_SIZE:  # number of new images to make
+            if count == new:
                 break
 
-    save_input(dir="augmented", name="Augmented")
-
-# pickling images and labels to prevent reloading from rawdata every time
+    serialize(name="Augmented", dir="augmented")
 
 
-def save_input(dir="rawdata", name="Base"):
-    images, labels = zip(*upload_images(dir))
-    images = list(images)
-    labels = list(labels)
-
-    num_labels = []
-    current = labels[0]
-    index = 0
-    for label in labels:
-        if label != current:
-            index += 1
-            current = label
-        num_labels.append(index)
-
-    image_pickle_file = open(f"files/{name}ImageDataPickle", "wb")
-    label_pickle_file = open(f"files/{name}LabelDataPickle", "wb")
-    pickle.dump(images, image_pickle_file)
-    pickle.dump(num_labels, label_pickle_file)
-    image_pickle_file.close()
-    label_pickle_file.close()
-
-
-def load(filename):
-    file = open(filename, "rb")
-    obj = pickle.load(file)
-    file.close()
-    return obj
-
-
-def get_classes():  # landuses.txt must end with blank line
-    file = open("files/landuses.txt", "r")
-    for landuse in file.readlines():
-        yield landuse[:-1]
-    file.close()
-
-
-def show_images(images=[]):  # full image name OR list of images
+# display list of images
+def show_images(images=[]):
     if (len(images) == 0):
         print("Error: Empty Image")
     else:
@@ -108,11 +102,23 @@ def show_images(images=[]):  # full image name OR list of images
         cv2.destroyAllWindows()
 
 
-def grayscale(images):
-    grays = []
-    for image in images:
-        grays.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
-    return np.array(grays)
+# turn images into grayscale
+def grayscale():
+    if not os.path.exists('files/grayscales'):
+        os.makedirs('files/grayscales')
+    landuses = [landuse for landuse in get_classes()]
+    for landuse in landuses:
+        path = f'files/grayscales/{landuse}'
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    images, labels = load('files/BaseCompressedData.npz')
+    count = 0
+    for image, label in tqdm(zip(images, labels)):
+        cv2.imwrite(
+            f"files/grayscales/{landuses[label]}/{landuses[label]}{count}.jpeg", cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
+        count += 1
+    serialize(name="Grays", dir="grayscales")
 
 
 # save_input()

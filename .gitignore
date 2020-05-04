@@ -134,9 +134,10 @@ dmypy.json
 .vscode/
 rawdata/
 augmented/
-BaseImageDataPickle
-BaseLabelDataPickle
-AugmentedImageDataPickle
-AugmentedLabelDataPickle
+grayscales/
+BaseCompressedData.npz
+AugmentedCompressedData.npz
+GraysCompressedData.npz
 VGG19ImageDataPickle
 VGG19LabelDataPickle
+VGG19ConvDataPickle
