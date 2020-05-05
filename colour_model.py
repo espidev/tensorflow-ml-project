@@ -32,16 +32,13 @@ def get_model():
 
 
 def run(model, mix=False, plot=False, test=False, save=False):
-    colours, labels = inputs.load("files/BaseCompressedData.npz")
+    colours, labels = inputs.load("BaseCompressedData.npz")
 
     if (mix):
-        augments, aug_labels = inputs.load("files/AugmentedCompressedData.npz")
-        print(augments.shape)
-        print(colours.shape)
+        augments, aug_labels = inputs.load("AugmentedCompressedData.npz")
         mixed = np.concatenate((colours, augments), axis=0)
         labels = np.concatenate((labels, aug_labels), axis=0)
-        print(mixed.shape)
-        print(labels.shape)
+
         indices = np.arange(mixed.shape[0])
         np.random.seed(0)
         np.random.shuffle(indices)

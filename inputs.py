@@ -28,8 +28,8 @@ def upload(img_size=(150, 150), dir="rawdata"):
 
 
 # pickling images and labels to prevent re-uploading from rawdata every time
-def serialize(name="Base", dir="rawdata"):
-    images, labels = zip(*upload(dir=dir))
+def serialize(name="Base", dir="rawdata", img_size=(150, 150)):
+    images, labels = zip(*upload(img_size=img_size, dir=dir))
     images = np.array(list(images))
     labels = np.array(list(labels))
 
@@ -43,14 +43,14 @@ def serialize(name="Base", dir="rawdata"):
         num_labels.append(index)
     num_labels = np.array(num_labels)
 
-    with open(f"files/{name}CompressedData.npz", "wb") as image_file:
-        np.savez_compressed(image_file, images=images, labels=num_labels)
+    with open(f"files/{name}CompressedData.npz", "wb") as file:
+        np.savez_compressed(file, images=images, labels=num_labels)
 
 
-# retrieve pickled images
+# retrieve serialized images
 def load(filename):
-    with open(filename, "rb") as image_file:
-        arr = np.load(image_file)
+    with open(f"files/{filename}.npz", "rb") as file:
+        arr = np.load(file)
         return arr["images"], arr["labels"]
 
 

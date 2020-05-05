@@ -138,6 +138,4 @@ grayscales/
 BaseCompressedData.npz
 AugmentedCompressedData.npz
 GraysCompressedData.npz
-VGG19ImageDataPickle
-VGG19LabelDataPickle
-VGG19ConvDataPickle
+VGGCompressedData.npz

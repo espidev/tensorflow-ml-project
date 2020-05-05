@@ -30,7 +30,7 @@ def get_model():
 
 
 def run(model, plot=False, test=False, save=False):
-    grays, labels = inputs.load("files/GraysCompressedData.npz")
+    grays, labels = inputs.load("GraysCompressedData.npz")
 
     indices = np.arange(grays.shape[0])
     np.random.seed(0)

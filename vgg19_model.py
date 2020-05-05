@@ -1,4 +1,5 @@
-import input
+import inputs
+import model_tools as mt
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -7,85 +8,77 @@ from keras import layers
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import decode_predictions
-import pickle
 from tqdm import tqdm
-# model = VGG19(include_top=False, weights="imagenet")  # remove dense layers
-# print(model.summary())
-# model.save("files/imagenetVGG19.h5")
-# comment all of below, RUN THIS, then uncomment below and comment this section
 
 
-# experimental
-
-# load model that does not have classification layer, just convolution layers
-vggmodel = tf.keras.models.load_model('files/imagenetVGG19.h5')
-print(vggmodel.summary())
-
-# colours = input.load("files/VGG19ImageDataPickle")
-labels = input.load("files/VGG19LabelDataPickle")
-# print(np.array(colours).shape)
-
-# temp = []
-# for i in range(5):
-#     temp.append(colours[i])  # add 5 images to a test batch
-
-# temp = np.array(temp)
-# print(temp.shape)
-
-# new_input = vggmodel.predict(temp)
-# # #(5, 7, 7, 512) this is the input for our own neural network
-# print(new_input.shape)
-
-# conv_data = []
-# for img in tqdm(colours):  # tqdm
-#     conv = vggmodel.predict_on_batch(img[np.newaxis, ])
-#     conv = conv[0]
-#     conv_data.append(conv)
+def imagenet():
+    pretrained = VGG19(include_top=False, weights="imagenet")
+    # remove dense layers
+    print(pretrained.summary())
+    mt.save_model(pretrained, "imagenetVGG19")
 
 
-# cd = np.array(conv_data)
-# print(cd.shape)
+def vgg_conv():
+    images, labels = zip(*inputs.upload(img_size=(224, 224), dir="rawdata"))
+    images = np.array(list(images))
+    labels = np.array(list(labels))
 
-# pickle_file = open(f"files/VGG19ConvDataPickle", "wb")
-# pickle.dump(conv_data, pickle_file)
-# pickle_file.close()
+    vggmodel = mt.load_model("imagenetVGG19")
+    conv_data = []
 
-conv_data = input.load("files/VGG19ConvDataPickle")
-conv_data = np.array(conv_data)
-print(conv_data.shape)
+    for img in tqdm(images):  # tqdm
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img_rgb = img_rgb[np.newaxis, ]
+        img_rgb = preprocess_input(img_rgb)
+        conv = vggmodel.predict_on_batch(img_rgb)
+        conv = conv[0]
+        conv_data.append(conv)
 
-train_data = conv_data[:1000]
-train_labels = np.array(labels)[:1000]
-print(train_data.shape)
-print(train_labels.shape)
-# training model TO DO
+    conv_data = np.array(conv_data)
+    print(conv_data.shape)
+    with open(f"files/VGGCompressedData.npz", "wb") as file:
+        np.savez_compressed(file, images=conv_data, labels=labels)
 
-model = keras.Sequential([
-    layers.Flatten(input_shape=(7, 7, 512)),
-    layers.Dense(256, activation=tf.nn.relu),  # consider changing
-    keras.layers.Dropout(0.3),
-    layers.Dense(34, activation=tf.nn.softmax)
-])
 
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy', 'sparse_categorical_crossentropy'])
-model.summary()
-model.fit(train_data,
-          train_labels,
-          epochs=5,
-          # batch_size=512,
-          validation_split=0.2,
-          verbose=2)
+def get_model():
+    model = keras.Sequential([
+        layers.Flatten(input_shape=(7, 7, 512)),
+        layers.Dense(256, activation=tf.nn.relu),
+        keras.layers.Dropout(0.3),
+        layers.Dense(34, activation=tf.nn.softmax)
+    ])
 
-# img = np.array(img)[np.newaxis, ]
-# img = img/255
-# print(img.shape)
-# img = preprocess_input(img)
+    model.compile(optimizer='Adagrad',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy', 'sparse_categorical_crossentropy'])
+    return model
 
-# prediction = model(img)
-# print(prediction.shape)
-# label = decode_predictions(prediction.numpy())
-# label = label[0:5][0]  # print top 5
-# for x in label:
-#     print(f"{x[1]} {x[2]}")
+
+def run(model, plot=False, test=False, save=False):
+    convs, labels = inputs.load("VGGCompressedData")
+
+    indices = np.arange(convs.shape[0])
+    np.random.seed(0)
+    np.random.shuffle(indices)
+
+    convs = convs[indices]
+    labels = labels[indices]
+
+    train_data = convs[:23000]
+    train_labels = labels[:23000]
+    test_data = convs[23000:]
+    test_labels = labels[23000:]
+
+    print("Train Data:", train_data.shape)
+    print("Train Label:", train_labels.shape)
+    print("Test Data:", test_data.shape)
+    print("Train Label:", test_labels.shape)
+
+    trained_model, history = mt.train_model(
+        model, train_data, train_labels, test_data, test_labels, epoch=15)
+    if (save):
+        mt.save_model(trained_model, "topVGG19model")
+    if (test):
+        mt.test_model(trained_model, test_data, test_labels)
+    if (plot):
+        mt.plot_history(history)
