@@ -34,3 +34,12 @@ import vgg19_model as vgg
 # vgg.vgg_conv()
 # vgg_top = vgg.get_model()
 # vgg.run(vgg_top, plot=True, test=True, save=True)
+
+# vgg_model = mt.load_model("topVGG19model")
+# vgg.conf_matrix(vgg_model)
+
+# Large-Scale Predicting
+
+# vgg.grid("sample01.tif")
+# vgg.grid("sample02.tif")
+# vgg.grid("sample03.tif")

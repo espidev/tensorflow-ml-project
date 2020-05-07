@@ -4,4 +4,5 @@ numpy
 tensorflow
 keras
 matplotlib
-pillow
+pandas
+seaborn

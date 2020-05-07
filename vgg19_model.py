@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import keras
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 from keras import layers
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import preprocess_input
@@ -52,6 +55,67 @@ def get_model():
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy', 'sparse_categorical_crossentropy'])
     return model
+
+
+def conf_matrix(model):
+    convs, labels = inputs.load("VGGCompressedData")
+
+    indices = np.arange(convs.shape[0])
+    np.random.seed(0)
+    np.random.shuffle(indices)
+
+    convs = convs[indices]
+    convs = convs[23000:]
+    labels = labels[indices]
+    labels = labels[23000:]
+
+    predictions = model.predict(convs)
+    predictions = np.argmax(predictions, axis=1)
+
+    df = pd.DataFrame({"Actual": labels, "Predicted": predictions}, columns=[
+                      "Actual", "Predicted"])
+    conf_matrix = pd.crosstab(df['Actual'], df['Predicted'], rownames=[
+        'Actual'], colnames=['Predicted'])
+    sn.heatmap(conf_matrix, annot=True, fmt="d",
+               cmap="YlGnBu", linewidths=.5, vmax=40)
+    plt.show()
+
+
+def grid(filename, model="topVGG19model"):
+    img = cv2.imread(
+        f"files/largescales/{filename}", cv2.IMREAD_UNCHANGED)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    fig, ax = plt.subplots()
+    ax.imshow(img)
+
+    vggconv = mt.load_model("imagenetVGG19")
+    conv_data = []
+
+    for i in tqdm(range(0, img.shape[0]-224, 224)):
+        for j in range(0, img.shape[1]-224, 224):
+            rect = ax.add_patch(plt.Rectangle((i, j), 224, 224, edgecolor='red',
+                                              alpha=0.3, lw=2, facecolor='none'))
+            crop = img[i:i+224, j:j+224]
+            crop = crop[np.newaxis, ]
+            crop = preprocess_input(crop)
+            conv = vggconv.predict_on_batch(crop)
+            conv_data.append(conv[0])
+    conv_data = np.array(conv_data)
+
+    vggmodel = mt.load_model(model)
+    predictions = vggmodel.predict(conv_data)
+    predictions = np.argmax(predictions, axis=1)
+
+    predictions = np.bincount(predictions)/predictions.shape[0]*100
+    landuses = [landuse for landuse in inputs.get_classes()]
+    for i in range(34):
+        try:
+            pred = predictions[i]
+        except:
+            pred = 0.0
+        print(f"{landuses[i]}: {pred}")
+    # inputs.show_images([img[4000:5000, 4000:5000]])
+    plt.show()
 
 
 def run(model, plot=False, test=False, save=False):
