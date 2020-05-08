@@ -6,6 +6,14 @@ Recognizing various forms of land use via satellite imaging is an important mean
 
 The ultimate goal of this project is to take high-definition satellite images of whole cities and accurately generate statistics on land use.
 
+## How to Run
+
+First, use pip to install the necessary dependencies. Anaconda is recommended; dependencies can be found under *files/dependencies.txt*
+
+    pip install opencv-python tqdm numpy tensorflow keras matplotlib pandas seaborn
+
+To access and run individual models, see pipeline<span>.py. A Dockerfile will soon be available. Note that all training and code was done on/written for Tensorflow CPU. 
+
 ## Data
 
 The first part of our dataset comes from the [UC Merced Land Use Dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various sites across the United States. Each pixel represents one square foot. There are a total of 21 classes with 100 images per class for a total of 2,100 images.
@@ -146,5 +154,31 @@ The next step for model training is to implement Google's Inception V3 network, 
 
 ### Limitations and Error
 
-![Confusion Matrix for VGG19 Model](https://github.com/espidev/tensorflow-ml-project/tree/master/files "Confusion Matrix for VGG19 Model")
+![Confusion Matrix for VGG19 Model](https://github.com/espidev/tensorflow-ml-project/tree/master/files/confusion_matrix.png "Confusion Matrix for VGG19 Model")
 
+In order of most to least mismatches:
+
+1. powerstation → industrial
+2. medium residential → tennis court*
+3. tennis court → basketball court*
+4. stadium → trackfield*
+5. dense residential → mobile homes, industrial, medium residential
+6. sparse residential → medium residential
+
+**and vice versa*
+
+The confusion between dense residential, medium residential, powerstations, and industrial are pretty self-explanatory: they all look the same, even to a human. We hypothesize that medium residential was often confused with tenniscourts and tenniscourts with basketball courts due to court lines being confused with streets. A CapsNet or Inception model may be better at identifying the finer differences between the two compared to VGG, especially with its heavy maxpooling. Most other confusions can be explained by exceedingly similar characteristics. 
+
+The greatest limitation is in scale and resolution. Currently, each pixel represents one square foot (0.3x0.3 meters) of space, however not all satellite images use this. Other satellite bands and sensors measure different wavelengths and have significantly varied input. It is beyond the scope of this project to incorporate these features.
+
+### Disclaimer
+
+This project was intended as an introduction to machine learning constructed by high school students; it is far from scientifically rigourous. Please use these models or files as sample code, but the inaccuracies are still quite high. 
+
+Project by: Kevin Tong and Devin Lin
+
+### References
+
+Marcello, J. (2019). Very High Resolution (Vhr) Satellite Imagery. (F. Eugenio, Ed.). S.l.: MDPI AG.
+
+Special thanks to Ke Deng for his help and support.
