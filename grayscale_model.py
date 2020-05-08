@@ -24,13 +24,12 @@ def get_model():
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy', "sparse_categorical_crossentropy"])
-    model.summary()
 
     return model
 
 
 def run(model, plot=False, test=False, save=False):
-    grays, labels = inputs.load("GraysCompressedData.npz")
+    grays, labels = inputs.load("GraysCompressedData")
 
     indices = np.arange(grays.shape[0])
     np.random.seed(0)

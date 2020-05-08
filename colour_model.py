@@ -32,10 +32,10 @@ def get_model():
 
 
 def run(model, mix=False, plot=False, test=False, save=False):
-    colours, labels = inputs.load("BaseCompressedData.npz")
+    colours, labels = inputs.load("BaseCompressedData")
 
     if (mix):
-        augments, aug_labels = inputs.load("AugmentedCompressedData.npz")
+        augments, aug_labels = inputs.load("AugmentedCompressedData")
         mixed = np.concatenate((colours, augments), axis=0)
         labels = np.concatenate((labels, aug_labels), axis=0)
 

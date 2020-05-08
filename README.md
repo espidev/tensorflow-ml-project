@@ -1,26 +1,24 @@
 # tensorflow-ml-project
 
-## Project Proposal
-
-### Introduction
+## Introduction
 
 Recognizing various forms of land use via satellite imaging is an important means of measuring urban spread and human development. Using Tensorflow Keras, this project will use satellite images of urban and sub-urban settings to classify land use (e.g. freeway, agriculture, forest, etc.). 
 
 The ultimate goal of this project is to take high-definition satellite images of whole cities and accurately generate statistics on land use.
 
-### Data
+## Data
 
-The first part of our dataset comes from the UC Merced Land Use Dataset (http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various sites across the United States. Each pixel represents one square foot. There are a total of 21 classes, with 100 images per class for a total of 2,100 images.
+The first part of our dataset comes from the [UC Merced Land Use Dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various sites across the United States. Each pixel represents one square foot. There are a total of 21 classes with 100 images per class for a total of 2,100 images.
 
-Citation: Yi Yang and Shawn Newsam, "Bag-Of-Visual-Words and Spatial Extensions for Land-Use Classification," ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (ACM GIS), 2010.
-
-
-The second part of our dataset comes from the NWPU-RESISC45 dataset (http://www.escience.cn/people/JunweiHan/NWPU-RESISC45.html) which also has 256x256 resolution images created by the Northwestern Polytechnical University (NWPU). Images come from over 100 countries and a variety of regions. Within this dataset is 45 different classes, with 700 images per class for a total of 31,500 images. From a NWPU-RESISC45 dataset a few classes (e.g. palace, church, cloud, etc.) were omitted for being either irrelevant or too specific. 
-
-Citation: G. Cheng, J. Han, X. Lu. Remote Sensing Image Scene Classification: Benchmark and State of the Art. Proceedings of the IEEE.
+Citation: *Yi Yang and Shawn Newsam, "Bag-Of-Visual-Words and Spatial Extensions for Land-Use Classification," ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (ACM GIS), 2010.*
 
 
-The third part of our dataset comes from senseFly (https://www.sensefly.com/education/datasets/?dataset=1502). Only a few hundred images were taken from the agricultural and airport datasets to bolster our image count.
+The second part of our dataset comes from the [NWPU-RESISC45 dataset](http://www.escience.cn/people/JunweiHan/NWPU-RESISC45.html) which also has 256x256 resolution images created by the Northwestern Polytechnical University (NWPU). Images come from over 100 countries and a variety of regions. Within this dataset is 45 different classes with 700 images per class for a total of 31,500 images. From the NWPU-RESISC45 dataset a few classes (e.g. palace, church, cloud, etc.) were omitted for being either irrelevant or too specific. Others, such as industrial and commericial, were combined for their similarities. Cloud detection was not needed given the high-resolution preprocessed orthoimagery input.
+
+Citation: *G. Cheng, J. Han, X. Lu. Remote Sensing Image Scene Classification: Benchmark and State of the Art. Proceedings of the IEEE.*
+
+
+The third part of our dataset comes from [senseFly](https://www.sensefly.com/education/datasets/?dataset=1502). Only a few hundred images were taken from the agricultural and airport datasets to bolster our image count.
 
 In the end, there are a total of 26,920 images in our dataset with 34 classes as follows:
 
@@ -59,12 +57,94 @@ In the end, there are a total of 26,920 images in our dataset with 34 classes as
 * tenniscourt
 * trackfield
 
-### Data Processing
-An important choice is whether or not colour should be factored into calculations. Since some land formations look very similar under greyscale, we will be including it. This will requiring normalization of all pixels into RGB, which means each pixel with have 3 values between 0 and 255.
+## Data Processing & Models
+For our baseline model a 7 layer grayscale CNN was used with resized 150x150 inputs. The accuracy achieved was about 42%. The next step was an RGB colour model using the same input format but with a few more convolutional layers. The accuracy was slightly better at 58%. To increase accuracy, data augmentation was used for the colour model but with little success or difference in outcomes. This was likely because certain classes (e.g. industrial and dense residential) have too many similar features. Augmentation is used to generate more data for enhanced feature extraction; however, given the similar key features of several classes, classification rather than feature extraction was likely the issue. 
 
-### Training Method
-We will be using multiple 2D convolutional layers in the model. We will start with larger kernel sizes in order to learn about larger features first, and then have later layers having smaller kernel sizes. All of these layers will have the relu activation function.
+For both CNN models the optimizer used was Adam and activations were all ReLU (softmax for classification layer). Different optimizers (Adamax, RMSprop, Adagrad) did not significantly vary the accuracy. Around 7 epochs is where overfitting began to occur, but we have not yet implemented an early callback function. The training/testing split was around 85% and 15%, with validation being 10% of the training set. Dropout layers between the final dense layers were used with parameters 0.3.
 
-We can also add drop out layers between layers to reduce the effects of overtraining.
+The respective model summaries are as follows:
 
-For the optimizer, we will likely use adam, because it works fairly well for other image classification problems.
+### Grayscale
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    conv2d_1 (Conv2D)            (None, 148, 148, 32)      320       
+    _________________________________________________________________
+    max_pooling2d_1 (MaxPooling2 (None, 74, 74, 32)        0
+    _________________________________________________________________
+    conv2d_2 (Conv2D)            (None, 72, 72, 32)        9248      
+    _________________________________________________________________
+    conv2d_3 (Conv2D)            (None, 70, 70, 32)        9248      
+    _________________________________________________________________
+    max_pooling2d_2 (MaxPooling2 (None, 35, 35, 32)        0
+    _________________________________________________________________
+    flatten_1 (Flatten)          (None, 39200)             0
+    _________________________________________________________________
+    dense_1 (Dense)              (None, 128)               5017728   
+    _________________________________________________________________
+    dense_2 (Dense)              (None, 34)                4386      
+    =================================================================
+    Total params: 5,040,930
+    Trainable params: 5,040,930
+    Non-trainable params: 0
+    _________________________________________________________________
+   
+### Colour
+
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #
+    =================================================================
+    conv2d_1 (Conv2D)            (None, 148, 148, 32)      896
+    _________________________________________________________________
+    max_pooling2d_1 (MaxPooling2 (None, 74, 74, 32)        0
+    _________________________________________________________________
+    conv2d_2 (Conv2D)            (None, 72, 72, 32)        9248
+    _________________________________________________________________
+    conv2d_3 (Conv2D)            (None, 70, 70, 32)        9248
+    _________________________________________________________________
+    max_pooling2d_2 (MaxPooling2 (None, 35, 35, 32)        0
+    _________________________________________________________________
+    conv2d_4 (Conv2D)            (None, 33, 33, 64)        18496
+    _________________________________________________________________
+    max_pooling2d_3 (MaxPooling2 (None, 16, 16, 64)        0
+    _________________________________________________________________
+    flatten_1 (Flatten)          (None, 16384)             0
+    _________________________________________________________________
+    dense_1 (Dense)              (None, 128)               2097280
+    _________________________________________________________________
+    dropout_1 (Dropout)          (None, 128)               0
+    _________________________________________________________________
+    dense_2 (Dense)              (None, 34)                4386
+    =================================================================
+    Total params: 2,139,554
+    Trainable params: 2,139,554
+    Non-trainable params: 0
+    _________________________________________________________________
+
+
+Lastly, the VGG19 model with preloaded weights was used for transfer learning. None of the Imagenet classes were trained on satellite images (an input of "airplane" yielded "nematode") so only the convolutional layers were kept. A 256 neuron dense layer was appended after passing all input through the VGG19 CNN. This resulted in a significantly better 80% accuracy. Compared to other benchmarks found on Github and elsewhere for non-CapsNet convolutional deep learning models trained on satellite images, this is quite good. 
+
+### VGG19 Top Layer
+
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #
+    =================================================================
+    flatten_1 (Flatten)          (None, 25088)             0
+    _________________________________________________________________
+    dense_1 (Dense)              (None, 256)               6422784
+    _________________________________________________________________
+    dropout_1 (Dropout)          (None, 256)               0
+    _________________________________________________________________
+    dense_2 (Dense)              (None, 34)                8738
+    =================================================================
+    Total params: 6,431,522
+    Trainable params: 6,431,522
+    Non-trainable params: 0
+    _________________________________________________________________
+
+The next step for model training is to implement Google's Inception V3 network, which should have a better accuracy due to less data loss. Our models were forced to use a significant amount of maxpooling with fewer convolutional layers due to a restriction on computing power. Passing all the data through VGG19's convolutional layers alone required up to four hours of computing time. Inception layers may also help resolve the size disparity between buildings and especially between streets and tennis courts (discussed below). Beyond Inception V3, a CapsNet network using Inception V3 is also on the agenda. It is unlikely that bounding boxes or Mask RCNNs will be implemented on this given the nature of satellite images—altitude and resolution make classifying different sizes of, say, housing communities or industrial developments after resizing not a feasible or effective tool. 
+
+### Limitations and Error
+
+![Confusion Matrix for VGG19 Model](https://github.com/espidev/tensorflow-ml-project/tree/master/files "Confusion Matrix for VGG19 Model")
+

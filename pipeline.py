@@ -14,7 +14,7 @@ import vgg19_model as vgg
 
 # grayscale_model = gm.get_model()
 # grayscale_model.summary()
-# gm.run(grayscale_model, plot=True, test=True, save=True)
+# gm.run(grayscale_model, plot=True, test=True, save=False)
 
 # Neural Network for Colour Images 150x150
 
@@ -35,8 +35,8 @@ import vgg19_model as vgg
 # vgg_top = vgg.get_model()
 # vgg.run(vgg_top, plot=True, test=True, save=True)
 
-# vgg_model = mt.load_model("topVGG19model")
-# vgg.conf_matrix(vgg_model)
+vgg_model = mt.load_model("topVGG19model")
+vgg.conf_matrix(vgg_model)
 
 # Large-Scale Predicting
 
