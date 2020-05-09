@@ -14,6 +14,8 @@ First, use pip to install the necessary dependencies. Anaconda is recommended. D
 
 To access and run individual models, see pipeline<span>.py. A Dockerfile will soon be available. Note that all training and code was done on/written for Tensorflow CPU. 
 
+[Rawdata folder can be found here.](https://drive.google.com/drive/folders/1UiFahqZ6tMJ87jgA8hByfcJc-E_TPM_b?usp=sharing) Extract under `/files`.
+
 ## Data
 
 The first part of our dataset comes from the [UC Merced Land Use Dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html) which has 256x256 resolution images manually taken from the USGS National Map Urban Area Imagery collection. Images come from various sites across the United States. Each pixel represents one square foot. There are a total of 21 classes with 100 images per class for a total of 2,100 images.
