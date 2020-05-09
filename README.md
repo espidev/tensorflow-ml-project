@@ -10,7 +10,7 @@ The ultimate goal of this project is to take high-definition orthoimagery and ac
 
 First, use pip to install the necessary dependencies. Anaconda is recommended. Dependencies can be found under *files/dependencies.txt*
 
-    pip install opencv-python tqdm numpy tensorflow keras matplotlib pandas seaborn
+    pip install opencv-python tqdm numpy tensorflow keras matplotlib pandas seaborn gdown
 
 To access and run individual models, see pipeline<span>.py. A Dockerfile will soon be available. Note that all training and code was done on/written for Tensorflow CPU. 
 

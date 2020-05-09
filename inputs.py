@@ -2,15 +2,13 @@ import numpy as np
 import cv2  # noqa
 import os
 import os.path  # noqa
-import msgpack  # noqa
 import gdown  # noqa
 from tqdm import tqdm  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 from zipfile import ZipFile
 
-# retrieve landuse catgories
 
-
+# retrieve landuse categories
 def get_classes():
     file = open("files/landuses.txt", "r")
     for landuse in file.readlines():
@@ -18,12 +16,13 @@ def get_classes():
     file.close()
 
 
+# download from google drive
 def gdrive():
     url = "https://drive.google.com/uc?id=1KAv5ZHsh8SAL7r80mJs6Y1jUFiI9BybF"
     output = "files/rawdata.zip"
     gdown.download(url, output, quiet=False)
     with ZipFile('files/rawdata.zip', 'r') as zipObj:
-        zipObj.extractall()
+        zipObj.extractall("files/rawdata")
     os.remove("files/rawdata.zip")
 
 

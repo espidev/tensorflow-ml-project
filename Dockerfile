@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow
+FROM tensorflow/tensorflow:latest-py3
 WORKDIR /usr/src/tensorflow-ml-project
 RUN apt-get update && pip install opencv-python \
     tqdm \
@@ -7,9 +7,11 @@ RUN apt-get update && pip install opencv-python \
     keras \
     matplotlib \
     pandas \
-    seaborn
+    seaborn \
+    gdown
 
 COPY . .
+
 
 
 
