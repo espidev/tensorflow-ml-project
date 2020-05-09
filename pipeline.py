@@ -6,6 +6,7 @@ import vgg19_model as vgg
 
 # Input from file & Data Augmentation
 
+# inputs.gdrive()
 # inputs.serialize()
 # inputs.augment()
 # inputs.grayscale()

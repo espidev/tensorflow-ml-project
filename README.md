@@ -14,7 +14,7 @@ First, use pip to install the necessary dependencies. Anaconda is recommended. D
 
 To access and run individual models, see pipeline<span>.py. A Dockerfile will soon be available. Note that all training and code was done on/written for Tensorflow CPU. 
 
-[Rawdata folder can be found here.](https://drive.google.com/drive/folders/1UiFahqZ6tMJ87jgA8hByfcJc-E_TPM_b?usp=sharing) Extract under `/files`.
+If `inputs.gdrive()` fails, [rawdata folder can be found here.](https://drive.google.com/drive/folders/1UiFahqZ6tMJ87jgA8hByfcJc-E_TPM_b?usp=sharing) Extract under `/files`.
 
 ## Data
 
