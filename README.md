@@ -2,13 +2,13 @@
 
 ## Introduction
 
-Recognizing various forms of land use via satellite imaging is an important means of measuring urban spread and human development. Using Tensorflow Keras, this project will use satellite images of urban and sub-urban settings to classify land use (e.g. freeway, agriculture, forest, etc.). 
+Recognizing various forms of land use via satellite imaging is an important means of measuring urban spread and human development. Using Tensorflow Keras, this project will use satellite images of urban, sub-urban, and natural settings to classify land use (e.g. freeway, agriculture, forest, etc.). 
 
-The ultimate goal of this project is to take high-definition satellite images of whole cities and accurately generate statistics on land use.
+The ultimate goal of this project is to take high-definition orthoimagery and accurately generate statistics on land use.
 
 ## How to Run
 
-First, use pip to install the necessary dependencies. Anaconda is recommended; dependencies can be found under *files/dependencies.txt*
+First, use pip to install the necessary dependencies. Anaconda is recommended. Dependencies can be found under *files/dependencies.txt*
 
     pip install opencv-python tqdm numpy tensorflow keras matplotlib pandas seaborn
 
@@ -154,7 +154,7 @@ The next step for model training is to implement Google's Inception V3 network, 
 
 ### Limitations and Error
 
-![Confusion Matrix for VGG19 Model](https://github.com/espidev/tensorflow-ml-project/tree/master/files/confusion_matrix.png "Confusion Matrix for VGG19 Model")
+![VGG19 Confusion Matrix](files/confusion_matrix.png)
 
 In order of most to least mismatches:
 
@@ -167,18 +167,24 @@ In order of most to least mismatches:
 
 **and vice versa*
 
-The confusion between dense residential, medium residential, powerstations, and industrial are pretty self-explanatory: they all look the same, even to a human. We hypothesize that medium residential was often confused with tenniscourts and tenniscourts with basketball courts due to court lines being confused with streets. A CapsNet or Inception model may be better at identifying the finer differences between the two compared to VGG, especially with its heavy maxpooling. Most other confusions can be explained by exceedingly similar characteristics. 
+The confusion between dense residential, medium residential, powerstations, and industrial is pretty self-explanatory: they all look the same, even to a human. We believe that medium residential was often confused with tennis courts and tennis courts with basketball courts due to the shared feature of "curved white lines." A CapsNet or Inception model may be better at identifying the finer differences between the two compared to VGG, especially with its heavy maxpooling. Most other confusions can be explained by exceedingly similar characteristics. 
 
-The greatest limitation is in scale and resolution. Currently, each pixel represents one square foot (0.3x0.3 meters) of space, however not all satellite images use this. Other satellite bands and sensors measure different wavelengths and have significantly varied input. It is beyond the scope of this project to incorporate these features.
+The greatest limitation is in scale and resolution. Currently, each pixel represents one square foot (0.3x0.3 meters) of space, however not all satellite images use this. Other satellite bands and sensors measure different wavelengths of light and have significantly varied input. It is beyond the scope of this project to incorporate these features, but there are obvious features to be found in different satellite spectral images. High-resolution orthoimagery involves only heavily "cleaned-up" data:
+
+*An orthoimage is a uniform-scale image where corrections have been made for feature displacement such as building tilt and for scale variations caused by terrain relief, sensor geometry, and camera tilt. A mathematical equation based on ground control points, sensor calibration information, and a digital elevation model is applied to each pixel to rectify the image to obtain the geometric qualities of a map.* (USGS EROS Archive)
 
 ### Disclaimer
 
-This project was intended as an introduction to machine learning constructed by high school students; it is far from scientifically rigourous. Please use these models or files as sample code, but the inaccuracies are still quite high. 
+This project was intended as an introduction to machine learning constructed by high school students; it is far from scientifically rigorous. Please use these models or files as sample code, but the inaccuracies are still quite high. 
 
 Project by: Kevin Tong and Devin Lin
+
+Last Updated May 2020. 
 
 ### References
 
 Marcello, J. (2019). Very High Resolution (Vhr) Satellite Imagery. (F. Eugenio, Ed.). S.l.: MDPI AG.
+
+USGS EROS Archive - Aerial Photography - High Resolution Orthoimagery (HRO). (n.d.). Retrieved May 8, 2020, from https://www.usgs.gov/centers/eros/science/usgs-eros-archive-aerial-photography-high-resolution-orthoimagery-hro
 
 Special thanks to Ke Deng for his help and support.
