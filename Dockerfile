@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-py3
+FROM python:3.6.9-buster
 WORKDIR /usr/src/tensorflow-ml-project
 RUN apt-get update && pip install opencv-python \
     tqdm \
@@ -10,8 +10,6 @@ RUN apt-get update && pip install opencv-python \
     seaborn \
     gdown
 
+RUN apt-get install -y vim
 COPY . .
-
-
-
-
+CMD ["python", "pipeline.py"]

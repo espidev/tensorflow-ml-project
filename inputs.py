@@ -3,9 +3,22 @@ import cv2  # noqa
 import os
 import os.path  # noqa
 import gdown  # noqa
+import yaml
 from tqdm import tqdm  # noqa
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img  # noqa
 from zipfile import ZipFile
+
+
+def config():
+    with open("config.yml", 'r') as stream:
+        try:
+            archive = yaml.safe_load(stream)
+            if (not archive["matplotlib_gui"]):
+                if (archive["grayscale_model"]["plot"]or archive["colour_model"]["plot"] or archive["vgg19_model"]["plot"] or archive["vgg19_model"]["confusion"] or archive["predict"]["grid"]):
+                    print("Warning: matplotlib_gui has been set to false but other GUI configuration settings have been set to true. No images or plots will be shown.")
+            return archive
+        except yaml.YAMLError as exc:
+            print(exc)
 
 
 # retrieve landuse categories
@@ -22,7 +35,7 @@ def gdrive():
     output = "files/rawdata.zip"
     gdown.download(url, output, quiet=False)
     with ZipFile('files/rawdata.zip', 'r') as zipObj:
-        zipObj.extractall("files/rawdata")
+        zipObj.extractall("files/")
     os.remove("files/rawdata.zip")
 
 
@@ -129,29 +142,3 @@ def grayscale():
             f"files/grayscales/{landuses[label]}/{landuses[label]}{count}.jpeg", cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
         count += 1
     serialize(name="Grays", dir="grayscales")
-
-
-# save_input()
-# images = load("files/BaseImageDataPickle")
-# labels = load("files/BaseLabelDataPickle")
-# show_images([images[0], images[9], images[4000], images[5000], images[20000]])
-
-# Deleted augmented and rawdata folders. Extract
-# new rawdata folder. Run everything commented above. Press any key to exit image windows.
-# It will take a while. Let me know if anything goes wrong.
-
-# augment_images()
-# aug_images = load("files/AugmentedImageDataPickle")
-# print(np.array(aug_images).shape)
-# show_images = show_images(
-#     [aug_images[i] for i in range(0, 24000, 1000)])
-
-# augment images works now. Uncomment above and run.
-
-
-# load and resize VGG19 images
-# save_input(name="VGG19")
-
-# vggimgs = load("files/VGG19ImageDataPickle")
-# vggimgs = np.array(vggimgs)
-# print(vggimgs.shape)

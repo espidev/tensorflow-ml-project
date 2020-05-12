@@ -1,9 +1,15 @@
+import inputs
 import tensorflow as tf
 import pandas as pd
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 
-mpl.use('tkagg')
+configs = inputs.config()
+if (configs["matplotlib_gui"]):
+    mpl.use('tkagg')
+else:
+    mpl.use('agg')
+
+import matplotlib.pyplot as plt  # noqa
 
 
 def train_model(model, train_data, train_labels, test_data, test_labels, epoch=10):
@@ -19,7 +25,6 @@ def train_model(model, train_data, train_labels, test_data, test_labels, epoch=1
 def load_model(name):
     model = tf.keras.models.load_model(
         f'files/{name}.h5', custom_objects={'softmax_v2': tf.nn.softmax})
-    model.summary()
     return model
 
 

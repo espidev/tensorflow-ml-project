@@ -57,18 +57,7 @@ def get_model():
     return model
 
 
-def conf_matrix(model):
-    convs, labels = inputs.load("VGGCompressedData")
-
-    indices = np.arange(convs.shape[0])
-    np.random.seed(0)
-    np.random.shuffle(indices)
-
-    convs = convs[indices]
-    convs = convs[23000:]
-    labels = labels[indices]
-    labels = labels[23000:]
-
+def conf_matrix(model, convs, labels):
     predictions = model.predict(convs)
     predictions = np.argmax(predictions, axis=1)
 
@@ -81,20 +70,23 @@ def conf_matrix(model):
     plt.show()
 
 
-def grid(filename, model="topVGG19model"):
+def grid(filename, model="topVGG19model", plot=False):
     img = cv2.imread(
         f"files/largescales/{filename}", cv2.IMREAD_UNCHANGED)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    fig, ax = plt.subplots()
-    ax.imshow(img)
+
+    if (plot):
+        fig, ax = plt.subplots()
+        ax.imshow(img)
 
     vggconv = mt.load_model("imagenetVGG19")
     conv_data = []
 
     for i in tqdm(range(0, img.shape[0]-224, 224)):
         for j in range(0, img.shape[1]-224, 224):
-            rect = ax.add_patch(plt.Rectangle((i, j), 224, 224, edgecolor='red',
-                                              alpha=0.3, lw=2, facecolor='none'))
+            if (plot):
+                rect = ax.add_patch(plt.Rectangle((i, j), 224, 224, edgecolor='red',
+                                                  alpha=0.3, lw=2, facecolor='none'))
             crop = img[i:i+224, j:j+224]
             crop = crop[np.newaxis, ]
             crop = preprocess_input(crop)
@@ -114,11 +106,11 @@ def grid(filename, model="topVGG19model"):
         except:
             pred = 0.0
         print(f"{landuses[i]}: {pred}")
-    # inputs.show_images([img[4000:5000, 4000:5000]])
-    plt.show()
+    if (plot):
+        plt.show()
 
 
-def run(model, plot=False, test=False, save=False):
+def run(model, plot=False, test=False, save=False, conf_matrix=False):
     convs, labels = inputs.load("VGGCompressedData")
 
     indices = np.arange(convs.shape[0])
@@ -146,3 +138,5 @@ def run(model, plot=False, test=False, save=False):
         mt.test_model(trained_model, test_data, test_labels)
     if (plot):
         mt.plot_history(history)
+    if (conf_matrix):
+        conf_matrix(trained_model, test_data, test_labels)

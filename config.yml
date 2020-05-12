@@ -1,0 +1,36 @@
+inputs:
+    all: false #all of below = true
+    download: false
+    serialize: false #resize & serialize to .npz
+    augment: false #apply keras augmentation & serialize augments
+    grayscale: false #grayscale & serialize
+matplotlib_gui: true #false if running Docker container.
+random_seed: 0
+grayscale_model:
+    load: true #load model from .h5 file
+    summary: true
+    run: true
+    plot: true
+    test: true
+    save: true
+colour_model:
+    load: false
+    summary: true
+    run: true
+    mix: true #false to omit augmented images
+    plot: true
+    test: true
+    save: true
+vgg19_model:
+    load: false
+    convolve: true #pass images through vgg19 imagenet (preprocessing)
+    summary: true
+    run: true
+    plot: true
+    test: true
+    save: true
+    confusion: true #plot confusion matrix
+predict:
+    grid: false #show image w/ grid overlay
+    filenames:
+        - "sample01.tif"
