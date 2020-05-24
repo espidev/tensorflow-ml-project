@@ -33,6 +33,7 @@ def get_classes():
 def gdrive():
     url = "https://drive.google.com/uc?id=1KAv5ZHsh8SAL7r80mJs6Y1jUFiI9BybF"
     output = "files/rawdata.zip"
+    print("Downloading from drive folder...")
     gdown.download(url, output, quiet=False)
     with ZipFile('files/rawdata.zip', 'r') as zipObj:
         zipObj.extractall("files/")
@@ -52,6 +53,7 @@ def upload(img_size=(150, 150), dir="rawdata"):
 
 # pickling images and labels to prevent re-uploading from rawdata every time
 def serialize(name="Base", dir="rawdata", img_size=(150, 150)):
+    print("Serializing images...")
     images, labels = zip(*upload(img_size=img_size, dir=dir))
     images = np.array(list(images))
     labels = np.array(list(labels))
@@ -79,6 +81,7 @@ def load(filename):
 
 # use keras image augmentation to decrease overfitting
 def augment(new=1):
+    print("Augmenting data...")
     if not os.path.exists('files/augmented'):
         os.makedirs('files/augmented')
     landuses = [landuse for landuse in get_classes()]
@@ -87,7 +90,7 @@ def augment(new=1):
         if not os.path.exists(path):
             os.makedirs(path)
 
-    images, labels = load('files/BaseCompressedData.npz')
+    images, labels = load('BaseCompressedData')
 
     data_aug = ImageDataGenerator(
         rotation_range=30,
@@ -127,6 +130,7 @@ def show_images(images=[]):
 
 # turn images into grayscale
 def grayscale():
+    print("Converting to grayscale...")
     if not os.path.exists('files/grayscales'):
         os.makedirs('files/grayscales')
     landuses = [landuse for landuse in get_classes()]
@@ -135,7 +139,7 @@ def grayscale():
         if not os.path.exists(path):
             os.makedirs(path)
 
-    images, labels = load('files/BaseCompressedData.npz')
+    images, labels = load('BaseCompressedData')
     count = 0
     for image, label in tqdm(zip(images, labels)):
         cv2.imwrite(

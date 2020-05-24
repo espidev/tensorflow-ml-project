@@ -73,7 +73,7 @@ if (vgg_conf["run"]):
             conf_matrix=(vgg_conf["confusion"] and configs["matplotlib_gui"]))
 
 # Large-Scale Predicting
-
-for filename in configs["predict"]["filenames"]:
-    vgg.grid(filename, plot=(configs["predict"]
-                             ["grid"] and configs["matplotlib_gui"]))
+if (configs["predict"]["run"]):
+    for filename in configs["predict"]["filenames"]:
+        vgg.grid(filename, plot=(configs["predict"]
+                                 ["grid"] and configs["matplotlib_gui"]))
